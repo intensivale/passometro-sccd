@@ -2009,7 +2009,7 @@ let isAdmin = false;
 <button onclick="exportarPDF()" type="button" style="background: #ff9800; color: white; font-weight: bold; padding: 10px 20px;">
     📄 PDF
 </button>
-<button onclick="evoNovaEvolucao()" type="button" style="background: #9c27b0; color: white; padding: 10px 20px;">
+<button onclick="novaEvolucaoRapida()" type="button" style="background: #9c27b0; color: white; padding: 10px 20px;">
     🔄 Nova Evolução
 </button>
 </div>
@@ -5537,6 +5537,8 @@ function darAlta() {
         }
     });
     
+    var prefixoLeito = ctiAtual + '_' + leitoAtual;
+    
     var registroAlta = {
         nome: nomePaciente,
         cti: ctiAtual,
@@ -5553,10 +5555,31 @@ function darAlta() {
     // Salvar na coleção de altas
     db.collection('altas').add(registroAlta)
         .then(function() {
+            // Excluir todas as evoluções deste leito
+            return db.collection('evolucoes')
+                .where('leitoId', '==', prefixoLeito)
+                .get();
+        })
+        .then(function(snapshot) {
+            // Deletar cada evolução encontrada
+            var batch = db.batch();
+            snapshot.forEach(function(doc) {
+                batch.delete(doc.ref);
+            });
+            return batch.commit();
+        })
+        .then(function() {
             // Limpar leito
             return db.collection('leitos').doc(getChaveLeitoFirebase()).delete();
         })
         .then(function() {
+            // Limpar localStorage das evoluções deste leito
+            try {
+                localStorage.removeItem('evolucao_last_' + prefixoLeito);
+            } catch(e) {
+                console.error('Erro ao limpar localStorage:', e);
+            }
+            
             // Limpar formulário
             document.querySelectorAll("input, textarea, select").forEach(function(el) {
                 if (el.id === 'seletorCTI' || el.id === 'seletorLeito') return;
@@ -5567,12 +5590,17 @@ function darAlta() {
                 if (el.tagName === 'SELECT') el.selectedIndex = 0;
             });
             
+            // Limpar lista de evoluções na tela
+            var listaEvo = document.getElementById('lista_evolucoes');
+            if (listaEvo) {
+                listaEvo.innerHTML = '<div style="opacity:.6; font-size: 13px;">Nenhuma evolução salva para este leito.</div>';
+            }
+            
             preencherDataHoraAtual();
             atualizarSelectLeitos();
-            listarEvolucoes();
             atualizarSyncStatus('ok');
             
-            alert("✅ Alta registrada com sucesso!\n\nPaciente: " + nomePaciente);
+            alert("✅ Alta registrada com sucesso!\n\nPaciente: " + nomePaciente + "\n\nEvoluções foram arquivadas.");
         })
         .catch(function(error) {
             console.error('Erro ao dar alta:', error);

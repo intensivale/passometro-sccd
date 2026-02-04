@@ -4950,6 +4950,166 @@ function aplicarDadosFormulario(conteudo) {
     // Recalcular
     if (typeof calcularIMC === 'function') calcularIMC();
     if (typeof calcularPBW === 'function') calcularPBW();
+    
+    // Ativar toggles dos campos condicionais
+    ativarTogglesCondicionais();
+}
+
+function ativarTogglesCondicionais() {
+    // Transfusões
+    ['ch', 'plaq', 'plasma', 'crio'].forEach(function(tipo) {
+        var chk = document.getElementsByName('evo_transf_' + tipo)[0];
+        var qtd = document.getElementById('evo_transf_' + tipo + '_qtd');
+        if (chk && qtd) {
+            qtd.style.display = chk.checked ? 'inline-block' : 'none';
+        }
+    });
+    
+    // Neurológico (Doppler, Brain4care)
+    ['doppler', 'brain4care'].forEach(function(tipo) {
+        var chk = document.getElementsByName('evo_' + tipo + '_check')[0];
+        var wrap = document.getElementById('evo_' + tipo + '_wrap');
+        if (chk && wrap) {
+            if (chk.checked) wrap.classList.remove('hidden');
+            else wrap.classList.add('hidden');
+        }
+    });
+    
+    // Hemodinâmico (Swan Ganz, Marcapasso, esCCO)
+    ['swanganz', 'marcapasso', 'escco'].forEach(function(tipo) {
+        var chk = document.getElementsByName('evo_' + tipo + '_check')[0];
+        var wrap = document.getElementById('evo_' + tipo + '_wrap');
+        if (chk && wrap) {
+            if (chk.checked) wrap.classList.remove('hidden');
+            else wrap.classList.add('hidden');
+        }
+    });
+    
+    // Delirium
+    var delChk = document.querySelector('input[name="evo_delirium"][value="sim"]');
+    var delWrap = document.getElementById('evo_delirium_tipos');
+    if (delChk && delWrap) {
+        if (delChk.checked) delWrap.classList.remove('hidden');
+        else delWrap.classList.add('hidden');
+    }
+    
+    // Analgesia/sedação
+    var analgChk = document.querySelector('input[name="evo_analg_sed"][value="sim"]');
+    var analgWrap = document.getElementById('evo_analgesia_lista');
+    if (analgChk && analgWrap) {
+        if (analgChk.checked) analgWrap.classList.remove('hidden');
+        else analgWrap.classList.add('hidden');
+    }
+    
+    // Medicações (dose inputs)
+    var meds = ['dipirona', 'tramadol', 'tylex', 'metadona', 'morfina', 'gabapentina', 
+                'haloperidol', 'quetiapina', 'risperidona', 'ketamina', 'midazolam', 
+                'fentanil', 'remifentanil', 'precedex', 'propofol', 'rocuronio', 'cisatracurio'];
+    meds.forEach(function(med) {
+        var chk = document.getElementById('evo_med_' + med);
+        var dose = document.getElementById('dose_evo_med_' + med);
+        if (chk && dose) {
+            if (chk.checked) dose.classList.remove('hidden');
+            else dose.classList.add('hidden');
+        }
+    });
+    
+    // Drogas vasoativas
+    var dvas = ['dobutamina', 'milrinona', 'noradrenalina', 'vasopressina'];
+    dvas.forEach(function(dva) {
+        var chk = document.getElementById('evo_chk_' + dva);
+        var div = document.getElementById('evo_drug_' + dva);
+        if (chk && div) {
+            if (chk.checked) div.classList.remove('hidden');
+            else div.classList.add('hidden');
+        }
+    });
+    
+    // Perfusão
+    var perfChk = document.getElementById('evo_chk_perf');
+    var perfFields = document.getElementById('evo_perf_fields');
+    if (perfChk && perfFields) {
+        if (perfChk.checked) perfFields.classList.remove('hidden');
+        else perfFields.classList.add('hidden');
+    }
+    
+    // ECG do dia
+    var ecgChk = document.querySelector('input[name="evo_ecg_dia"][value="sim"]');
+    var ecgWrap = document.getElementById('evo_ecg_txt_wrap');
+    if (ecgChk && ecgWrap) {
+        if (ecgChk.checked) ecgWrap.classList.remove('hidden');
+        else ecgWrap.classList.add('hidden');
+    }
+    
+    // POCUS cardíaco
+    var pocusChk = document.querySelector('input[name="evo_pocus_card"][value="sim"]');
+    var pocusWrap = document.getElementById('evo_pocus_card_desc');
+    if (pocusChk && pocusWrap) {
+        if (pocusChk.checked) pocusWrap.classList.remove('hidden');
+        else pocusWrap.classList.add('hidden');
+    }
+    
+    // VExUS
+    var vexusChk = document.querySelector('input[name="evo_vexus"][value="sim"]');
+    var vexusWrap = document.getElementById('evo_vexus_desc');
+    if (vexusChk && vexusWrap) {
+        if (vexusChk.checked) vexusWrap.classList.remove('hidden');
+        else vexusWrap.classList.add('hidden');
+    }
+    
+    // Profilaxia TEV
+    var tevChk = document.querySelector('input[name="evo_tev"][value="nao"]');
+    var tevWrap = document.getElementById('evo_tev_just_wrap');
+    if (tevChk && tevWrap) {
+        if (tevChk.checked) tevWrap.classList.remove('hidden');
+        else tevWrap.classList.add('hidden');
+    }
+    
+    // Respiratório
+    var respRadios = document.querySelectorAll('input[name="evo_suporte_resp"]');
+    respRadios.forEach(function(radio) {
+        if (radio.checked) {
+            var tipo = radio.value;
+            var vm = document.getElementById('evo_resp_vm');
+            var venturi = document.getElementById('evo_resp_venturi');
+            var cn = document.getElementById('evo_resp_cn');
+            var mr = document.getElementById('evo_resp_mr');
+            
+            if (vm) vm.classList.add('hidden');
+            if (venturi) venturi.classList.add('hidden');
+            if (cn) cn.classList.add('hidden');
+            if (mr) mr.classList.add('hidden');
+            
+            if (tipo === 'VM' && vm) vm.classList.remove('hidden');
+            else if (tipo === 'Venturi' && venturi) venturi.classList.remove('hidden');
+            else if (tipo === 'CN' && cn) cn.classList.remove('hidden');
+            else if (tipo === 'MR' && mr) mr.classList.remove('hidden');
+        }
+    });
+    
+    // Gasometria
+    var gasoChk = document.getElementById('evo_chk_gaso');
+    var gasoFields = document.getElementById('evo_gaso_fields');
+    if (gasoChk && gasoFields) {
+        if (gasoChk.checked) gasoFields.classList.remove('hidden');
+        else gasoFields.classList.add('hidden');
+    }
+    
+    // Rx tórax
+    var rxChk = document.querySelector('input[name="evo_rx_torax"][value="sim"]');
+    var rxWrap = document.getElementById('evo_rx_torax_desc');
+    if (rxChk && rxWrap) {
+        if (rxChk.checked) rxWrap.classList.remove('hidden');
+        else rxWrap.classList.add('hidden');
+    }
+    
+    // Diálise
+    var dialiseChk = document.querySelector('input[name="evo_dialise"][value="sim"]');
+    var dialiseWrap = document.getElementById('evo_dialise_campos');
+    if (dialiseChk && dialiseWrap) {
+        if (dialiseChk.checked) dialiseWrap.classList.remove('hidden');
+        else dialiseWrap.classList.add('hidden');
+    }
 }
 
 function preencherDataHoraAtual() {

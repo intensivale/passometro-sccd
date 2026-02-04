@@ -1002,7 +1002,6 @@ let isAdmin = false;
 <h3>Ações</h3>
 <div class="row nowrap" style="justify-content: flex-start; gap: 14px;">
 <button onclick="gerarTexto()" type="button">Transformar em texto</button>
-<button onclick="abrirEvolucao()" type="button">Evolução diária</button>
 <span id="status_save" style="margin-left: 10px; color: #0b6;"> </span>
 </div>
 <!-- Painel: Texto para copiar (não bloqueia a página) -->
@@ -1039,8 +1038,6 @@ let isAdmin = false;
 <button onclick="fecharEvolucao()" type="button">Fechar</button>
 </div>
 <div class="row nowrap" style="gap: 10px;">
-<button onclick="evoCopiarIdentificacao()" type="button">Copiar identificação da admissão</button>
-<button onclick="evoCopiarHPPDaAdmissao()" type="button">Copiar HPP/Alergias/Cirurgias da admissão</button>
 <span id="status_evo_save" style="margin-left: 10px; color: #0b6;"></span>
 </div>
 <!-- Cabeçalho -->
@@ -1073,14 +1070,14 @@ let isAdmin = false;
 </label>
 </div>
 <div class="section">
-<div class="row" style="justify-content: space-between; align-items: center;"><h3>Motivo da internação na UTI</h3><button onclick="evoCopiarMotivoAnterior()" type="button">Copiar motivo anterior</button></div>
+<h3>Motivo da internação na UTI</h3>
 <div class="row">
 <textarea name="evo_motivo_uti" rows="3" style="width: 100%;"></textarea>
 </div>
 </div>
 <!-- Problemas ativos -->
 <div class="section">
-<div class="row" style="justify-content: space-between; align-items: center;"><h3>Problemas atuais</h3><button onclick="evoCopiarProblemasAnteriores()" type="button">Copiar problemas anteriores</button></div>
+<h3>Problemas atuais</h3>
 <div class="row nowrap" style="justify-content: flex-end;">
 </div>
 <div class="row">
@@ -4204,7 +4201,7 @@ function evoGerarTexto() {
 
 
   function evoAutoFromAdmissao() {
-    // Copiar identificação completa + HPP/Alergias/Cirurgias da admissão
+    // Copiar identificação completa + HPP/Alergias/Cirurgias/Medicações da admissão
     function byName(n){ return document.querySelector('[name="'+n+'"]'); }
     function vName(n){ var el = byName(n); return el ? (el.value || '') : ''; }
 
@@ -4230,10 +4227,11 @@ function evoGerarTexto() {
     }
     setByName('evo_pbw', pbwVal);
 
-    // HPP / Alergias / Cirurgias
+    // HPP / Alergias / Cirurgias / Medicações
     setByName('evo_comorbidades', vName('hpp'));
     setByName('evo_alergias', vName('alergias'));
     setByName('evo_cirurgias', vName('cirurgias'));
+    setByName('evo_meds', vName('med_dom'));
 
     try { evoCalcularTFGeClCr && evoCalcularTFGeClCr(); } catch(e) {}
     try { evoUpdateBigHeader && evoUpdateBigHeader(); } catch(e) {}

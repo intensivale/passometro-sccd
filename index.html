@@ -4507,9 +4507,37 @@ function mostrarSistema(nomeUsuario) {
         });
     }
     
+    // Testar conexão com Firestore
+    testarConexaoFirebase();
+    
     // Inicializar sistema
     atualizarLeitos();
     iniciarListenerTempoReal();
+}
+
+function testarConexaoFirebase() {
+    // Tenta ler uma coleção para verificar se tem permissão
+    db.collection('leitos').limit(1).get()
+        .then(function() {
+            console.log('✅ Conexão Firebase OK');
+            atualizarSyncStatus('ok');
+        })
+        .catch(function(error) {
+            console.error('❌ Erro Firebase:', error);
+            atualizarSyncStatus('error');
+            
+            // Mostrar erro detalhado
+            var msg = 'Erro de conexão com o banco de dados:\n\n';
+            if (error.code === 'permission-denied') {
+                msg += 'PERMISSÃO NEGADA\n\nPossíveis causas:\n';
+                msg += '1. Regras do Firestore não configuradas\n';
+                msg += '2. Domínio não autorizado no Firebase\n\n';
+                msg += 'Acesse o Firebase Console para corrigir.';
+            } else {
+                msg += error.message;
+            }
+            alert(msg);
+        });
 }
 
 // ========== FUNÇÕES DE SINCRONIZAÇÃO COM FIREBASE ==========
@@ -4802,10 +4830,9 @@ function listarEvolucoes() {
     
     var prefixo = ctiAtual + '_' + leitoAtual;
     
+    // Buscar evoluções sem orderBy para evitar necessidade de índice
     db.collection('evolucoes')
         .where('leitoId', '==', prefixo)
-        .orderBy('timestamp', 'desc')
-        .limit(20)
         .get()
         .then(function(snapshot) {
             if (snapshot.empty) {
@@ -4813,10 +4840,27 @@ function listarEvolucoes() {
                 return;
             }
             
-            container.innerHTML = '<h4 style="color:#2e7d32; margin:5px 0 10px; font-size:14px;">📋 Evoluções deste Leito:</h4>';
-            
+            // Ordenar localmente por data
+            var evolucoes = [];
             snapshot.forEach(function(doc) {
                 var item = doc.data();
+                item._id = doc.id;
+                evolucoes.push(item);
+            });
+            
+            // Ordenar por data (mais recente primeiro)
+            evolucoes.sort(function(a, b) {
+                var dataA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                var dataB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                return dataB - dataA;
+            });
+            
+            // Limitar a 20
+            evolucoes = evolucoes.slice(0, 20);
+            
+            container.innerHTML = '<h4 style="color:#2e7d32; margin:5px 0 10px; font-size:14px;">📋 Evoluções deste Leito:</h4>';
+            
+            evolucoes.forEach(function(item) {
                 var div = document.createElement('div');
                 div.style.cssText = 'border: 1px solid #c8e6c9; border-radius: 6px; padding: 8px 12px; margin: 5px 0; font-size: 13px; display: flex; justify-content: space-between; align-items: center; background:#fff;';
                 
@@ -4825,8 +4869,8 @@ function listarEvolucoes() {
                 
                 div.innerHTML = '<span><strong>' + nome + '</strong> - ' + dataStr + '</span>' +
                     '<div>' +
-                    '<button onclick="carregarEvolucaoFirebase(\'' + doc.id + '\')" style="cursor:pointer; color:#1565c0; border:1px solid #1565c0; background:#e3f2fd; padding: 4px 10px; border-radius: 4px; margin-right: 5px;">Abrir</button>' +
-                    '<button onclick="deletarEvolucaoFirebase(\'' + doc.id + '\')" style="cursor:pointer; color:#c62828; border:1px solid #c62828; background:#ffebee; padding: 4px 10px; border-radius: 4px;">Excluir</button>' +
+                    '<button onclick="carregarEvolucaoFirebase(\'' + item._id + '\')" style="cursor:pointer; color:#1565c0; border:1px solid #1565c0; background:#e3f2fd; padding: 4px 10px; border-radius: 4px; margin-right: 5px;">Abrir</button>' +
+                    '<button onclick="deletarEvolucaoFirebase(\'' + item._id + '\')" style="cursor:pointer; color:#c62828; border:1px solid #c62828; background:#ffebee; padding: 4px 10px; border-radius: 4px;">Excluir</button>' +
                     '</div>';
                 
                 container.appendChild(div);
@@ -4834,7 +4878,7 @@ function listarEvolucoes() {
         })
         .catch(function(error) {
             console.error('Erro ao listar evoluções:', error);
-            container.innerHTML = '<div style="color: #c62828; font-size: 13px;">Erro ao carregar evoluções.</div>';
+            container.innerHTML = '<div style="color: #c62828; font-size: 13px;">Erro ao carregar evoluções: ' + error.message + '</div>';
         });
 }
 

@@ -2889,7 +2889,8 @@ if (tipo === 'VM') vm.classList.remove('hidden');
 
   function copiarDadosEvolucaoAnterior() {
     try {
-      var prev = localStorage.getItem('evolucao_last');
+      // Usa a chave específica do leito
+      var prev = localStorage.getItem('evolucao_last_' + ctiAtual + '_' + leitoAtual);
       if (!prev) return; // Primeira evolução, não tem anterior
       
       var data = JSON.parse(prev);
@@ -2924,6 +2925,9 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         'evo_bia', 'evo_bia_dia',
         'evo_mp_transv', 'evo_mp_transv_dia', 
         'evo_drenos_outros', 'evo_retirados',
+        // Nutrição (apenas campos de texto, não checkboxes)
+        'evo_dieta_tipo', 'evo_dieta_ml', 'evo_dieta_kcal', 'evo_dieta_ptn',
+        'evo_npt_ml', 'evo_npt_kcal', 'evo_npt_ptn',
         // Impressão clínica
         'evo_impressao'
       ];
@@ -2937,11 +2941,14 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         
         if (campo.type === 'radio') {
           // Para radio buttons, marca o que tem o mesmo valor
-          if (campo.value === data[nomeCampo]) {
-            campo.checked = true;
-            // Dispara o evento onclick se existir
-            if (campo.onclick) campo.onclick();
-          }
+          var radios = area.querySelectorAll('[name="'+nomeCampo+'"]');
+          radios.forEach(function(r) {
+            if (r.value === data[nomeCampo]) {
+              r.checked = true;
+              // Dispara o evento onclick se existir
+              if (r.onclick) r.onclick();
+            }
+          });
         } else if (campo.type === 'checkbox') {
           campo.checked = !!data[nomeCampo];
         } else {
@@ -2950,7 +2957,7 @@ if (tipo === 'VM') vm.classList.remove('hidden');
       });
       
       // Reaplica os toggles condicionais para mostrar/esconder campos
-      evoToggleCulturas();
+      if (typeof evoToggleCulturas === 'function') evoToggleCulturas();
       
     } catch(e) {
       console.error('Erro ao copiar evolução anterior:', e);
@@ -5304,9 +5311,10 @@ function carregarEvolucaoFirebase(docId) {
         .then(function(doc) {
             if (doc.exists) {
                 var dados = doc.data().dados;
-                aplicarDadosFormulario(dados);
-                // Abre a evolução para visualização
-                abrirEvolucao();
+                // Abre a evolução PRIMEIRO (sem limpar, pois vamos preencher)
+                abrirEvolucaoSemLimpar();
+                // Depois aplica os dados
+                aplicarDadosEvolucao(dados);
                 alert('Evolução carregada para visualização!');
             }
         })
@@ -5325,11 +5333,12 @@ function editarEvolucaoFirebase(docId) {
         .then(function(doc) {
             if (doc.exists) {
                 var dados = doc.data().dados;
-                aplicarDadosFormulario(dados);
                 // Armazena o ID para atualização
                 evolucaoEmEdicao = docId;
-                // Abre a evolução para edição
-                abrirEvolucao();
+                // Abre a evolução PRIMEIRO (sem limpar, pois vamos preencher)
+                abrirEvolucaoSemLimpar();
+                // Depois aplica os dados
+                aplicarDadosEvolucao(dados);
                 // Mostra indicador de edição
                 var statusDiv = document.getElementById('status_evo_save');
                 if (statusDiv) {
@@ -5340,6 +5349,54 @@ function editarEvolucaoFirebase(docId) {
         .catch(function(error) {
             alert('Erro ao carregar: ' + error.message);
         });
+}
+
+// Função para abrir evolução sem limpar campos (para visualizar/editar)
+function abrirEvolucaoSemLimpar() {
+    var area = document.getElementById('evolucaoArea');
+    if (!area) return;
+    area.classList.remove('hidden');
+    try { area.scrollIntoView({behavior:'smooth', block:'start'}); }
+    catch(e) { area.scrollIntoView(true); }
+}
+
+// Função para aplicar dados especificamente na área de evolução
+function aplicarDadosEvolucao(dados) {
+    var area = document.getElementById('evolucaoArea');
+    if (!area || !dados) return;
+    
+    // Primeiro limpa todos os campos da evolução
+    var els = area.querySelectorAll('input, textarea, select');
+    els.forEach(function(el) {
+        if (el.type === 'checkbox' || el.type === 'radio') {
+            el.checked = false;
+        } else if (!el.readOnly) {
+            el.value = '';
+        }
+    });
+    
+    // Aplica os dados
+    for (var key in dados) {
+        if (!dados.hasOwnProperty(key)) continue;
+        
+        var valor = dados[key];
+        var els = area.querySelectorAll('[name="' + key + '"]');
+        
+        if (els.length === 0) continue;
+        
+        els.forEach(function(el) {
+            if (el.type === 'checkbox') {
+                el.checked = !!valor;
+            } else if (el.type === 'radio') {
+                el.checked = (el.value === valor);
+            } else {
+                el.value = valor !== null && valor !== undefined ? valor : '';
+            }
+        });
+    }
+    
+    // Ativa os toggles condicionais
+    ativarTogglesCondicionais();
 }
 
 function deletarEvolucaoFirebase(docId) {
@@ -5359,24 +5416,36 @@ var salvarEvolucaoOriginal = typeof salvarEvolucao === 'function' ? salvarEvoluc
 function salvarEvolucao() {
     var nomePct = document.getElementsByName("nome")[0]?.value || "Paciente";
     
-    var inputs = document.querySelectorAll("input, textarea, select");
+    // Coletar APENAS campos da evolução (dentro de #evolucaoArea)
+    var evolucaoArea = document.getElementById('evolucaoArea');
+    if (!evolucaoArea) {
+        alert('Erro: área de evolução não encontrada');
+        return;
+    }
+    
+    var inputs = evolucaoArea.querySelectorAll("input, textarea, select");
     var conteudo = {};
     
     inputs.forEach(function(el) {
-        if (el.id === 'seletorCTI' || el.id === 'seletorLeito') return;
-        if (el.id === 'loginEmail' || el.id === 'loginPassword') return;
-        
         var chave = el.name || el.id;
         if (!chave) return;
         
-        if (el.type === 'checkbox' || el.type === 'radio') {
+        if (el.type === 'checkbox') {
+            conteudo[chave] = el.checked;
+        } else if (el.type === 'radio') {
             if (el.checked) {
-                conteudo[chave + '::' + el.value] = true;
-                if (el.type === 'radio') conteudo[chave] = el.value;
+                conteudo[chave] = el.value;
             }
         } else {
             conteudo[chave] = el.value;
         }
+    });
+    
+    // Adicionar campos readonly da identificação
+    var camposIdentificacao = ['evo_nome', 'evo_idade', 'evo_sexo', 'evo_dia_uti', 'evo_peso', 'evo_altura', 'evo_imc', 'evo_pbw'];
+    camposIdentificacao.forEach(function(campo) {
+        var el = document.getElementsByName(campo)[0];
+        if (el) conteudo[campo] = el.value;
     });
     
     var evolucao = {
@@ -5392,6 +5461,13 @@ function salvarEvolucao() {
     
     atualizarSyncStatus('pending');
     
+    // Salvar no localStorage para próxima evolução
+    try {
+        localStorage.setItem('evolucao_last_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
+    } catch(e) {
+        console.error('Erro ao salvar no localStorage:', e);
+    }
+    
     // Verifica se está editando ou criando nova evolução
     if (evolucaoEmEdicao) {
         // Atualizar evolução existente
@@ -5400,9 +5476,10 @@ function salvarEvolucao() {
         
         db.collection('evolucoes').doc(evolucaoEmEdicao).update(evolucao)
             .then(function() {
+                atualizarSyncStatus('ok');
                 salvarLeitoAtual();
                 listarEvolucoes();
-                evolucaoEmEdicao = null; // Limpa o modo de edição
+                evolucaoEmEdicao = null;
                 var statusDiv = document.getElementById('status_evo_save');
                 if (statusDiv) statusDiv.innerHTML = '';
                 alert('✅ Evolução atualizada com sucesso!');
@@ -5416,6 +5493,7 @@ function salvarEvolucao() {
         // Criar nova evolução
         db.collection('evolucoes').add(evolucao)
             .then(function() {
+                atualizarSyncStatus('ok');
                 salvarLeitoAtual();
                 listarEvolucoes();
                 alert('✅ Evolução salva com sucesso!');

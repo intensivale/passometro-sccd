@@ -5514,16 +5514,19 @@ function darAlta() {
         return;
     }
     
-    if (!confirm("⚠️ DAR ALTA ao paciente:\n\n" + nomePaciente + "\n\n" + ctiAtual.replace('CTI', 'CTI ') + " - Leito " + leitoAtual + "\n\nDeseja gerar um resumo de alta com IA?")) return;
+    if (!confirm("⚠️ DAR ALTA ao paciente:\n\n" + nomePaciente + "\n\n" + ctiAtual.replace('CTI', 'CTI ') + " - Leito " + leitoAtual + "\n\nGerar resumo de alta?")) return;
     
-    // Mostrar loading
-    mostrarModalResumoAlta(nomePaciente, true);
+    // Mostrar modal
+    mostrarModalResumoAlta(nomePaciente, false);
     
     // Coletar dados para o resumo
     var dadosResumo = coletarDadosParaResumo();
     
-    // Gerar resumo com IA
-    gerarResumoAltaIA(dadosResumo, nomePaciente);
+    // Gerar resumo automaticamente (melhorado)
+    var resumo = gerarResumoManual(dadosResumo);
+    
+    // Atualizar modal com o resumo
+    atualizarModalResumoAlta(resumo, nomePaciente, false);
 }
 
 function coletarDadosParaResumo() {
@@ -5704,47 +5707,183 @@ Use linguagem médica profissional, seja objetivo e conciso. O texto deve estar 
 
 function gerarResumoManual(dados) {
     var linhas = [];
+    var hoje = new Date();
     
-    linhas.push("=== RESUMO DE ALTA UTI ===\n");
-    linhas.push("IDENTIFICAÇÃO: " + dados.nome + ", " + dados.idade + " anos, " + (dados.sexo === 'M' ? 'masculino' : 'feminino'));
-    linhas.push("Data de admissão: " + dados.dataAdmissao + "\n");
+    // CABEÇALHO
+    linhas.push("═══════════════════════════════════════════════════════");
+    linhas.push("         RESUMO DE ALTA DA UNIDADE DE TERAPIA INTENSIVA");
+    linhas.push("═══════════════════════════════════════════════════════\n");
     
+    // 1. IDENTIFICAÇÃO
+    linhas.push("1. IDENTIFICAÇÃO");
+    linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    linhas.push("Nome: " + dados.nome);
+    linhas.push("Idade: " + dados.idade + " anos");
+    linhas.push("Sexo: " + (dados.sexo === 'M' ? 'Masculino' : 'Feminino'));
+    linhas.push("Data de Admissão na UTI: " + (dados.dataAdmissao || 'Não informada'));
+    linhas.push("Data de Alta: " + hoje.toLocaleDateString('pt-BR') + " às " + hoje.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'}));
+    linhas.push("");
+    
+    // 2. MOTIVO DA INTERNAÇÃO
+    linhas.push("2. MOTIVO DA INTERNAÇÃO NA UTI");
+    linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     if (dados.motivoUTI) {
-        linhas.push("MOTIVO DA INTERNAÇÃO:");
-        linhas.push(dados.motivoUTI + "\n");
+        linhas.push(dados.motivoUTI);
+    } else if (dados.hma) {
+        linhas.push(dados.hma);
+    } else {
+        linhas.push("Não informado.");
     }
+    linhas.push("");
+    
+    // 3. RESUMO DA INTERNAÇÃO
+    linhas.push("3. RESUMO DA INTERNAÇÃO");
+    linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     
     if (dados.problemasAtuais) {
-        linhas.push("PROBLEMAS DURANTE INTERNAÇÃO:");
-        linhas.push(dados.problemasAtuais + "\n");
-    }
-    
-    if (dados.focoInfeccioso || dados.atb1) {
-        linhas.push("INFECÇÃO/ANTIBIOTICOTERAPIA:");
-        if (dados.focoInfeccioso) linhas.push("Foco: " + dados.focoInfeccioso);
-        if (dados.atb1) linhas.push("- " + dados.atb1 + " (D" + dados.atb1Dias + "/" + dados.atb1Total + ")");
-        if (dados.atb2) linhas.push("- " + dados.atb2 + " (D" + dados.atb2Dias + "/" + dados.atb2Total + ")");
-        if (dados.atb3) linhas.push("- " + dados.atb3 + " (D" + dados.atb3Dias + "/" + dados.atb3Total + ")");
+        linhas.push("Durante a internação na UTI, o paciente evoluiu com:");
+        linhas.push(dados.problemasAtuais);
         linhas.push("");
     }
     
-    if (dados.transfusoes.length > 0) {
-        linhas.push("HEMOTRANSFUSÕES: " + dados.transfusoes.join(", ") + "\n");
+    if (dados.hpp) {
+        linhas.push("História Patológica Pregressa:");
+        linhas.push(dados.hpp);
+        linhas.push("");
     }
     
-    if (dados.dispositivos.length > 0) {
-        linhas.push("DISPOSITIVOS UTILIZADOS: " + dados.dispositivos.join(", ") + "\n");
+    if (dados.cirurgias) {
+        linhas.push("Cirurgias Prévias:");
+        linhas.push(dados.cirurgias);
+        linhas.push("");
     }
     
+    if (dados.alergias) {
+        linhas.push("Alergias:");
+        linhas.push(dados.alergias);
+        linhas.push("");
+    }
+    
+    // 4. ANTIBIOTICOTERAPIA
+    if (dados.focoInfeccioso || dados.atb1) {
+        linhas.push("4. ANTIBIOTICOTERAPIA");
+        linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        
+        if (dados.focoInfeccioso) {
+            linhas.push("Foco Infeccioso: " + dados.focoInfeccioso);
+        }
+        
+        if (dados.atb1) {
+            linhas.push("• " + dados.atb1 + " - Dia " + (dados.atb1Dias || "?") + " de " + (dados.atb1Total || "?"));
+        }
+        if (dados.atb2) {
+            linhas.push("• " + dados.atb2 + " - Dia " + (dados.atb2Dias || "?") + " de " + (dados.atb2Total || "?"));
+        }
+        if (dados.atb3) {
+            linhas.push("• " + dados.atb3 + " - Dia " + (dados.atb3Dias || "?") + " de " + (dados.atb3Total || "?"));
+        }
+        
+        if (dados.culturas === 'sim') {
+            if (dados.culturasPositivas) {
+                linhas.push("\nCulturas Positivas: " + dados.culturasPositivas);
+            }
+        }
+        if (dados.culturasPendentes) {
+            linhas.push("Culturas Pendentes: " + dados.culturasPendentes);
+        }
+        
+        linhas.push("");
+    }
+    
+    // 5. HEMOTRANSFUSÕES
+    if (dados.transfusoes && dados.transfusoes.length > 0) {
+        linhas.push("5. HEMOTRANSFUSÕES");
+        linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        dados.transfusoes.forEach(function(t) {
+            linhas.push("• " + t);
+        });
+        linhas.push("");
+    }
+    
+    // 6. DISPOSITIVOS INVASIVOS
+    if (dados.dispositivos && dados.dispositivos.length > 0) {
+        linhas.push("6. DISPOSITIVOS INVASIVOS UTILIZADOS");
+        linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        dados.dispositivos.forEach(function(d) {
+            linhas.push("• " + d);
+        });
+        linhas.push("");
+    }
+    
+    // 7. CONDIÇÕES DE ALTA
+    linhas.push("7. CONDIÇÕES DE ALTA");
+    linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     if (dados.impressao) {
-        linhas.push("CONDIÇÕES DE ALTA:");
-        linhas.push(dados.impressao + "\n");
+        linhas.push(dados.impressao);
+    } else {
+        linhas.push("Paciente estável clinicamente, apto para alta da UTI.");
+    }
+    linhas.push("");
+    
+    // 8. ORIENTAÇÕES PÓS-ALTA
+    linhas.push("8. ORIENTAÇÕES PÓS-ALTA");
+    linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    
+    // Usar Plano/Metas 24h para orientações específicas
+    if (dados.plano24h) {
+        linhas.push("CUIDADOS ESPECÍFICOS (baseados no plano de metas):");
+        
+        // Processar o plano e transformar em orientações
+        var planoLinhas = dados.plano24h.split('\n');
+        planoLinhas.forEach(function(linha) {
+            linha = linha.trim();
+            if (linha && linha.length > 3) {
+                // Remover bullets e formatação
+                linha = linha.replace(/^[-•*]\s*/, '');
+                
+                // Transformar metas em orientações
+                if (linha.toLowerCase().includes('o2') || linha.toLowerCase().includes('oxig')) {
+                    linhas.push("• " + linha.replace(/manter/i, 'Manter').replace(/monitorar/i, 'Monitorar'));
+                } else if (linha.toLowerCase().includes('atb') || linha.toLowerCase().includes('antibio')) {
+                    linhas.push("• " + linha.replace(/completar/i, 'Completar'));
+                } else if (linha.toLowerCase().includes('fisio')) {
+                    linhas.push("• " + linha.replace(/manter/i, 'Realizar'));
+                } else if (linha.toLowerCase().includes('alta')) {
+                    // Pular linhas sobre alta
+                } else {
+                    linhas.push("• " + linha);
+                }
+            }
+        });
+        linhas.push("");
     }
     
-    linhas.push("ORIENTAÇÕES PÓS-ALTA:");
-    linhas.push("- Retorno ambulatorial conforme agendamento");
-    linhas.push("- Manter medicações prescritas");
-    linhas.push("- Procurar emergência se: febre, dispneia, dor torácica, alteração do nível de consciência");
+    // Orientações gerais sempre presentes
+    linhas.push("ORIENTAÇÕES GERAIS:");
+    linhas.push("• Manter todas as medicações prescritas na alta conforme orientação médica");
+    linhas.push("• Retorno ambulatorial conforme agendamento");
+    linhas.push("• Manter acompanhamento com médico de referência");
+    
+    if (dados.atb1) {
+        var diasRestantes = (parseInt(dados.atb1Total) || 0) - (parseInt(dados.atb1Dias) || 0);
+        if (diasRestantes > 0) {
+            linhas.push("• Completar antibioticoterapia conforme prescrito");
+        }
+    }
+    
+    linhas.push("");
+    linhas.push("SINAIS DE ALERTA - Procurar emergência se apresentar:");
+    linhas.push("• Febre (temperatura > 38°C) ou hipotermia");
+    linhas.push("• Falta de ar ou dificuldade respiratória");
+    linhas.push("• Dor torácica");
+    linhas.push("• Alteração do nível de consciência (sonolência excessiva ou confusão)");
+    linhas.push("• Sinais de sangramento");
+    linhas.push("• Piora importante do estado geral");
+    
+    linhas.push("");
+    linhas.push("═══════════════════════════════════════════════════════");
+    linhas.push("         Resumo gerado automaticamente em " + hoje.toLocaleDateString('pt-BR'));
+    linhas.push("═══════════════════════════════════════════════════════");
     
     return linhas.join("\n");
 }
@@ -5763,16 +5902,11 @@ function mostrarModalResumoAlta(nomePaciente, loading) {
                     <button onclick="fecharModalResumoAlta()" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">&times;</button>
                 </div>
                 <div style="padding:20px;overflow-y:auto;flex:1;">
-                    <div id="resumoAltaLoading" style="text-align:center;padding:40px;">
-                        <div style="font-size:48px;margin-bottom:20px;">🤖</div>
-                        <div style="font-size:18px;color:#666;">Gerando resumo com IA...</div>
-                        <div style="margin-top:10px;color:#999;">Aguarde alguns segundos</div>
-                    </div>
-                    <div id="resumoAltaConteudo" style="display:none;">
-                        <div id="resumoAltaAviso" style="display:none;background:#fff3e0;border:1px solid #ff9800;border-radius:6px;padding:10px;margin-bottom:15px;color:#e65100;">
-                            ⚠️ Não foi possível conectar com a IA. Resumo gerado automaticamente - revise antes de usar.
+                    <div id="resumoAltaConteudo">
+                        <div style="background:#e3f2fd;border:1px solid #2196f3;border-radius:6px;padding:12px;margin-bottom:15px;color:#0d47a1;">
+                            ℹ️ Resumo gerado automaticamente com base nos dados da internação. Revise e edite conforme necessário.
                         </div>
-                        <textarea id="resumoAltaTexto" style="width:100%;height:400px;font-family:monospace;font-size:13px;padding:15px;border:1px solid #ddd;border-radius:6px;resize:vertical;"></textarea>
+                        <textarea id="resumoAltaTexto" style="width:100%;height:450px;font-family:monospace;font-size:13px;padding:15px;border:1px solid #ddd;border-radius:6px;resize:vertical;"></textarea>
                     </div>
                 </div>
                 <div style="padding:15px 20px;border-top:1px solid #eee;display:flex;justify-content:space-between;gap:10px;">
@@ -5788,16 +5922,11 @@ function mostrarModalResumoAlta(nomePaciente, loading) {
     }
     
     document.getElementById('resumoAltaNome').textContent = nomePaciente;
-    document.getElementById('resumoAltaLoading').style.display = loading ? 'block' : 'none';
-    document.getElementById('resumoAltaConteudo').style.display = loading ? 'none' : 'block';
     modal.style.display = 'flex';
 }
 
 function atualizarModalResumoAlta(resumo, nomePaciente, isManual) {
-    document.getElementById('resumoAltaLoading').style.display = 'none';
-    document.getElementById('resumoAltaConteudo').style.display = 'block';
     document.getElementById('resumoAltaTexto').value = resumo;
-    document.getElementById('resumoAltaAviso').style.display = isManual ? 'block' : 'none';
 }
 
 function fecharModalResumoAlta() {

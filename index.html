@@ -5607,8 +5607,8 @@ function coletarDadosParaResumo() {
     // Impressão clínica
     dados.impressao = document.getElementsByName("evo_impressao")[0]?.value || "";
     
-    // Plano
-    dados.plano = document.getElementsByName("evo_plano")[0]?.value || "";
+    // Plano/Metas 24h (última evolução)
+    dados.plano24h = document.getElementsByName("evo_plano_24h")[0]?.value || "";
     
     return dados;
 }
@@ -5655,8 +5655,8 @@ ${dados.dispositivos.length > 0 ? dados.dispositivos.join(', ') : 'Nenhum'}
 IMPRESSÃO CLÍNICA:
 ${dados.impressao || 'Não informada'}
 
-PLANO REGISTRADO:
-${dados.plano || 'Não informado'}
+PLANO/METAS 24H (ÚLTIMA EVOLUÇÃO):
+${dados.plano24h || 'Não informado'}
 
 ---
 
@@ -5668,7 +5668,7 @@ Por favor, gere um RESUMO DE ALTA estruturado com:
 5. **HEMOTRANSFUSÕES** (se houver)
 6. **DISPOSITIVOS** (quais foram usados)
 7. **CONDIÇÕES DE ALTA** (baseado na impressão clínica)
-8. **ORIENTAÇÕES PÓS-ALTA** (cuidados recomendados, retornos, sinais de alerta)
+8. **ORIENTAÇÕES PÓS-ALTA** - IMPORTANTE: Base as orientações no PLANO/METAS 24H acima. Transforme as metas do plano em orientações específicas para o paciente/família (ex: se o plano menciona "manter oxigenioterapia", oriente "manter oxigênio domiciliar conforme prescrito"). Inclua também sinais de alerta gerais.
 
 Use linguagem médica profissional, seja objetivo e conciso. O texto deve estar pronto para ser copiado e colado no sistema hospitalar.`;
 
@@ -5677,6 +5677,7 @@ Use linguagem médica profissional, seja objetivo e conciso. O texto deve estar 
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "anthropic-version": "2023-06-01"
             },
             body: JSON.stringify({
                 model: "claude-sonnet-4-20250514",

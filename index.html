@@ -843,7 +843,7 @@ let isAdmin = false;
 </div>
 </div>
 <div class="row nowrap" style="align-items: center;">
-<div style="min-width: 260px;">Analgesia / sedação em uso:</div>
+<div style="min-width: 260px;">Sedação / Analgesia / BNM em uso:</div>
 <label style="flex-direction: row; align-items: center; gap: 8px; min-width: 90px;">
 <input name="analg_sed" onclick="toggleAnalgesia(true)" type="radio" value="sim"/> Sim
       </label>
@@ -853,84 +853,49 @@ let isAdmin = false;
 <div class="hidden" id="analgesia_lista" style="flex: 1;">
 <div class="row" style="margin: 0; gap: 14px; flex-wrap: wrap;">
 <div class="med-item">
-<input id="med_dipirona" name="med_dipirona" onclick="toggleDose('med_dipirona','dose_med_dipirona')" type="checkbox"/>
-<span>Dipirona</span>
-<input class="dose-input hidden" id="dose_med_dipirona" name="dose_med_dipirona" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_tramadol" name="med_tramadol" onclick="toggleDose('med_tramadol','dose_med_tramadol')" type="checkbox"/>
-<span>Tramadol</span>
-<input class="dose-input hidden" id="dose_med_tramadol" name="dose_med_tramadol" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_tylex" name="med_tylex" onclick="toggleDose('med_tylex','dose_med_tylex')" type="checkbox"/>
-<span>Tylex</span>
-<input class="dose-input hidden" id="dose_med_tylex" name="dose_med_tylex" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_metadona" name="med_metadona" onclick="toggleDose('med_metadona','dose_med_metadona')" type="checkbox"/>
-<span>Metadona</span>
-<input class="dose-input hidden" id="dose_med_metadona" name="dose_med_metadona" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_diazepam" name="med_diazepam" onclick="toggleDose('med_diazepam','dose_med_diazepam')" type="checkbox"/>
-<span>Diazepam</span>
-<input class="dose-input hidden" id="dose_med_diazepam" name="dose_med_diazepam" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_clonazepam" name="med_clonazepam" onclick="toggleDose('med_clonazepam','dose_med_clonazepam')" type="checkbox"/>
-<span>Clonazepam</span>
-<input class="dose-input hidden" id="dose_med_clonazepam" name="dose_med_clonazepam" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_quetiapina" name="med_quetiapina" onclick="toggleDose('med_quetiapina','dose_med_quetiapina')" type="checkbox"/>
-<span>Quetiapina</span>
-<input class="dose-input hidden" id="dose_med_quetiapina" name="dose_med_quetiapina" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_risperidona" name="med_risperidona" onclick="toggleDose('med_risperidona','dose_med_risperidona')" type="checkbox"/>
-<span>Risperidona</span>
-<input class="dose-input hidden" id="dose_med_risperidona" name="dose_med_risperidona" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_ketamina" name="med_ketamina" onclick="toggleDose('med_ketamina','dose_med_ketamina')" type="checkbox"/>
-<span>Ketamina</span>
-<input class="dose-input hidden" id="dose_med_ketamina" name="dose_med_ketamina" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
 <input id="med_midazolam" name="med_midazolam" onclick="toggleDose('med_midazolam','dose_med_midazolam')" type="checkbox"/>
 <span>Midazolam</span>
-<input class="dose-input hidden" id="dose_med_midazolam" name="dose_med_midazolam" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_midazolam" name="dose_med_midazolam" placeholder="μg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="med_fentanil" name="med_fentanil" onclick="toggleDose('med_fentanil','dose_med_fentanil')" type="checkbox"/>
 <span>Fentanil</span>
-<input class="dose-input hidden" id="dose_med_fentanil" name="dose_med_fentanil" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_fentanil" name="dose_med_fentanil" placeholder="μg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="med_remifentanil" name="med_remifentanil" onclick="toggleDose('med_remifentanil','dose_med_remifentanil')" type="checkbox"/>
 <span>Remifentanil</span>
-<input class="dose-input hidden" id="dose_med_remifentanil" name="dose_med_remifentanil" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_remifentanil" name="dose_med_remifentanil" placeholder="μg/kg/min ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="med_precedex" name="med_precedex" onclick="toggleDose('med_precedex','dose_med_precedex')" type="checkbox"/>
 <span>Precedex</span>
-<input class="dose-input hidden" id="dose_med_precedex" name="dose_med_precedex" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_precedex" name="dose_med_precedex" placeholder="μg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="med_propofol" name="med_propofol" onclick="toggleDose('med_propofol','dose_med_propofol')" type="checkbox"/>
 <span>Propofol</span>
-<input class="dose-input hidden" id="dose_med_propofol" name="dose_med_propofol" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_propofol" name="dose_med_propofol" placeholder="mg/kg/h ou ml/h" type="text"/>
+</div>
+<div class="med-item">
+<input id="med_ketamina" name="med_ketamina" onclick="toggleDose('med_ketamina','dose_med_ketamina')" type="checkbox"/>
+<span>Ketamina</span>
+<input class="dose-input hidden" id="dose_med_ketamina" name="dose_med_ketamina" placeholder="μg/kg/min ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="med_rocuronio" name="med_rocuronio" onclick="toggleDose('med_rocuronio','dose_med_rocuronio')" type="checkbox"/>
 <span>Rocurônio</span>
-<input class="dose-input hidden" id="dose_med_rocuronio" name="dose_med_rocuronio" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_rocuronio" name="dose_med_rocuronio" placeholder="mg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="med_cisatracurio" name="med_cisatracurio" onclick="toggleDose('med_cisatracurio','dose_med_cisatracurio')" type="checkbox"/>
 <span>Cisatracúrio</span>
-<input class="dose-input hidden" id="dose_med_cisatracurio" name="dose_med_cisatracurio" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_med_cisatracurio" name="dose_med_cisatracurio" placeholder="μg/kg/min ou ml/h" type="text"/>
+</div>
+<div class="med-item">
+<input id="med_tramadol" name="med_tramadol" onclick="toggleDose('med_tramadol','dose_med_tramadol')" type="checkbox"/>
+<span>Tramadol</span>
+<input class="dose-input hidden" id="dose_med_tramadol" name="dose_med_tramadol" placeholder="dose/via" type="text"/>
 </div>
 </div>
 </div>
@@ -1586,84 +1551,49 @@ let isAdmin = false;
 <div class="hidden" id="evo_analgesia_lista" style="margin-top: 8px;">
 <div class="row" style="margin: 0; gap: 14px; flex-wrap: wrap;">
 <div class="med-item">
-<input id="evo_med_dipirona" name="evo_med_dipirona" onclick="toggleDose('evo_med_dipirona','dose_evo_med_dipirona')" type="checkbox"/>
-<span>Dipirona</span>
-<input class="dose-input hidden" id="dose_evo_med_dipirona" name="dose_evo_med_dipirona" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_tramadol" name="evo_med_tramadol" onclick="toggleDose('evo_med_tramadol','dose_evo_med_tramadol')" type="checkbox"/>
-<span>Tramadol</span>
-<input class="dose-input hidden" id="dose_evo_med_tramadol" name="dose_evo_med_tramadol" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_tylex" name="evo_med_tylex" onclick="toggleDose('evo_med_tylex','dose_evo_med_tylex')" type="checkbox"/>
-<span>Tylex</span>
-<input class="dose-input hidden" id="dose_evo_med_tylex" name="dose_evo_med_tylex" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_metadona" name="evo_med_metadona" onclick="toggleDose('evo_med_metadona','dose_evo_med_metadona')" type="checkbox"/>
-<span>Metadona</span>
-<input class="dose-input hidden" id="dose_evo_med_metadona" name="dose_evo_med_metadona" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_diazepam" name="evo_med_diazepam" onclick="toggleDose('evo_med_diazepam','dose_evo_med_diazepam')" type="checkbox"/>
-<span>Diazepam</span>
-<input class="dose-input hidden" id="dose_evo_med_diazepam" name="dose_evo_med_diazepam" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_clonazepam" name="evo_med_clonazepam" onclick="toggleDose('evo_med_clonazepam','dose_evo_med_clonazepam')" type="checkbox"/>
-<span>Clonazepam</span>
-<input class="dose-input hidden" id="dose_evo_med_clonazepam" name="dose_evo_med_clonazepam" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_quetiapina" name="evo_med_quetiapina" onclick="toggleDose('evo_med_quetiapina','dose_evo_med_quetiapina')" type="checkbox"/>
-<span>Quetiapina</span>
-<input class="dose-input hidden" id="dose_evo_med_quetiapina" name="dose_evo_med_quetiapina" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_risperidona" name="evo_med_risperidona" onclick="toggleDose('evo_med_risperidona','dose_evo_med_risperidona')" type="checkbox"/>
-<span>Risperidona</span>
-<input class="dose-input hidden" id="dose_evo_med_risperidona" name="dose_evo_med_risperidona" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_ketamina" name="evo_med_ketamina" onclick="toggleDose('evo_med_ketamina','dose_evo_med_ketamina')" type="checkbox"/>
-<span>Ketamina</span>
-<input class="dose-input hidden" id="dose_evo_med_ketamina" name="dose_evo_med_ketamina" placeholder="dose" type="text"/>
-</div>
-<div class="med-item">
 <input id="evo_med_midazolam" name="evo_med_midazolam" onclick="toggleDose('evo_med_midazolam','dose_evo_med_midazolam')" type="checkbox"/>
 <span>Midazolam</span>
-<input class="dose-input hidden" id="dose_evo_med_midazolam" name="dose_evo_med_midazolam" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_midazolam" name="dose_evo_med_midazolam" placeholder="μg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="evo_med_fentanil" name="evo_med_fentanil" onclick="toggleDose('evo_med_fentanil','dose_evo_med_fentanil')" type="checkbox"/>
 <span>Fentanil</span>
-<input class="dose-input hidden" id="dose_evo_med_fentanil" name="dose_evo_med_fentanil" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_fentanil" name="dose_evo_med_fentanil" placeholder="μg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="evo_med_remifentanil" name="evo_med_remifentanil" onclick="toggleDose('evo_med_remifentanil','dose_evo_med_remifentanil')" type="checkbox"/>
 <span>Remifentanil</span>
-<input class="dose-input hidden" id="dose_evo_med_remifentanil" name="dose_evo_med_remifentanil" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_remifentanil" name="dose_evo_med_remifentanil" placeholder="μg/kg/min ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="evo_med_precedex" name="evo_med_precedex" onclick="toggleDose('evo_med_precedex','dose_evo_med_precedex')" type="checkbox"/>
 <span>Precedex</span>
-<input class="dose-input hidden" id="dose_evo_med_precedex" name="dose_evo_med_precedex" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_precedex" name="dose_evo_med_precedex" placeholder="μg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="evo_med_propofol" name="evo_med_propofol" onclick="toggleDose('evo_med_propofol','dose_evo_med_propofol')" type="checkbox"/>
 <span>Propofol</span>
-<input class="dose-input hidden" id="dose_evo_med_propofol" name="dose_evo_med_propofol" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_propofol" name="dose_evo_med_propofol" placeholder="mg/kg/h ou ml/h" type="text"/>
+</div>
+<div class="med-item">
+<input id="evo_med_ketamina" name="evo_med_ketamina" onclick="toggleDose('evo_med_ketamina','dose_evo_med_ketamina')" type="checkbox"/>
+<span>Ketamina</span>
+<input class="dose-input hidden" id="dose_evo_med_ketamina" name="dose_evo_med_ketamina" placeholder="μg/kg/min ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="evo_med_rocuronio" name="evo_med_rocuronio" onclick="toggleDose('evo_med_rocuronio','dose_evo_med_rocuronio')" type="checkbox"/>
 <span>Rocurônio</span>
-<input class="dose-input hidden" id="dose_evo_med_rocuronio" name="dose_evo_med_rocuronio" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_rocuronio" name="dose_evo_med_rocuronio" placeholder="mg/kg/h ou ml/h" type="text"/>
 </div>
 <div class="med-item">
 <input id="evo_med_cisatracurio" name="evo_med_cisatracurio" onclick="toggleDose('evo_med_cisatracurio','dose_evo_med_cisatracurio')" type="checkbox"/>
 <span>Cisatracúrio</span>
-<input class="dose-input hidden" id="dose_evo_med_cisatracurio" name="dose_evo_med_cisatracurio" placeholder="dose" type="text"/>
+<input class="dose-input hidden" id="dose_evo_med_cisatracurio" name="dose_evo_med_cisatracurio" placeholder="μg/kg/min ou ml/h" type="text"/>
+</div>
+<div class="med-item">
+<input id="evo_med_tramadol" name="evo_med_tramadol" onclick="toggleDose('evo_med_tramadol','dose_evo_med_tramadol')" type="checkbox"/>
+<span>Tramadol</span>
+<input class="dose-input hidden" id="dose_evo_med_tramadol" name="dose_evo_med_tramadol" placeholder="dose/via" type="text"/>
 </div>
 </div>
 </div>

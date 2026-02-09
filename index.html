@@ -2624,11 +2624,11 @@ if (tipo === 'VM') vm.classList.remove('hidden');
 
   // ===== Evolução: Neuro igual à admissão =====
   function evoCalcGlasgow() {
-    var ao = parseFloat((byId('evo_glasgow_ao')||{}).value) || 0;
-    var rv = parseFloat((byId('evo_glasgow_rv')||{}).value) || 0;
-    var rm = parseFloat((byId('evo_glasgow_rm')||{}).value) || 0;
+    var ao = parseFloat(document.getElementById('evo_glasgow_ao')?.value) || 0;
+    var rv = parseFloat(document.getElementById('evo_glasgow_rv')?.value) || 0;
+    var rm = parseFloat(document.getElementById('evo_glasgow_rm')?.value) || 0;
     var total = ao + rv + rm;
-    var out = byId('evo_glasgow_total');
+    var out = document.getElementById('evo_glasgow_total');
     if (out) out.value = total > 0 ? String(total) : '';
   }
 
@@ -6230,12 +6230,17 @@ function executarAlta(nomePaciente) {
             try {
                 var chaveEvolucao = 'evolucao_last_' + ctiAtual + '_' + leitoAtual;
                 localStorage.removeItem(chaveEvolucao);
-                console.log('localStorage limpo:', chaveEvolucao);
+                
+                // Também limpar localStorage do leito
+                var chaveLeito = 'LEITO_' + ctiAtual + '_' + leitoAtual;
+                localStorage.removeItem(chaveLeito);
+                
+                console.log('localStorage limpo:', chaveEvolucao, chaveLeito);
             } catch(e) {
                 console.error('Erro ao limpar localStorage:', e);
             }
             
-            // Limpar formulário
+            // Limpar formulário COMPLETAMENTE
             document.querySelectorAll("input, textarea, select").forEach(function(el) {
                 if (el.id === 'seletorCTI' || el.id === 'seletorLeito') return;
                 if (el.id === 'loginEmail' || el.id === 'loginPassword') return;
@@ -6244,6 +6249,10 @@ function executarAlta(nomePaciente) {
                 else el.value = "";
                 if (el.tagName === 'SELECT') el.selectedIndex = 0;
             });
+            
+            // Fechar área de evolução se estiver aberta
+            var evoArea = document.getElementById('evolucaoArea');
+            if (evoArea) evoArea.classList.add('hidden');
             
             // Limpar lista de evoluções na tela
             var listaEvo = document.getElementById('lista_evolucoes');
@@ -6255,7 +6264,7 @@ function executarAlta(nomePaciente) {
             atualizarSelectLeitos();
             atualizarSyncStatus('ok');
             
-            alert("✅ Alta registrada com sucesso!\n\nPaciente: " + nomePaciente + "\n\nEvoluções foram arquivadas.");
+            alert("✅ Alta registrada com sucesso!\n\nPaciente: " + nomePaciente + "\n\nEvoluções foram arquivadas.\n\n⚠️ ATENÇÃO: Se quiser usar este leito novamente, troque para outro leito e volte para garantir limpeza completa.");
         })
         .catch(function(error) {
             console.error('Erro ao dar alta:', error);

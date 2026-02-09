@@ -427,18 +427,10 @@ let isAdmin = false;
       <textarea name="med_dom" rows="4"></textarea>
 </label>
 </div>
-<!-- Alergias: tudo na mesma linha; textarea aparece só se Sim -->
-<div class="row nowrap" style="align-items: flex-start;">
-<div style="min-width: 90px; margin-top: 6px;">Alergias:</div>
-<label style="flex-direction: row; align-items: center; gap: 8px; min-width: unset;">
-<input name="alergias_check" onclick="toggleAlergiaCampo(true)" type="radio" value="sim"/> Sim
-    </label>
-<label style="flex-direction: row; align-items: center; gap: 8px; min-width: unset;">
-<input name="alergias_check" onclick="toggleAlergiaCampo(false)" type="radio" value="nao"/> Não
-    </label>
-<div class="hidden" id="campoAlergia" style="flex: 1;">
-<textarea name="alergias" rows="2" style="width: 100%;"></textarea>
-</div>
+<div class="row">
+<label style="flex: 1; min-width: 100%;">Alergias:
+      <textarea name="alergias" rows="2" placeholder="Sem alergias conhecidas ou descrever alergias medicamentosas/alimentares"></textarea>
+</label>
 </div>
 </div>
 <!-- Exames de imagem: deve vir abaixo do campo alergias (quadro separado) -->
@@ -1000,8 +992,11 @@ let isAdmin = false;
 <!-- Ações -->
 <div class="section">
 <h3>Ações</h3>
-<div class="row nowrap" style="justify-content: flex-start; gap: 14px;">
-<button onclick="gerarTexto()" type="button">Transformar em texto</button>
+<div class="row nowrap" style="justify-content: flex-start; gap: 14px; flex-wrap: wrap;">
+<button onclick="gerarTexto()" type="button">📄 Transformar em texto</button>
+<button onclick="window.print()" type="button">🖨️ Imprimir</button>
+<button onclick="salvarAdmissao()" type="button" style="background: #4caf50; color: white; font-weight: bold;">💾 Salvar</button>
+<button onclick="novaEvolucaoRapida()" type="button" style="background: #ff9800; color: white; font-weight: bold;">📝 Nova Evolução</button>
 <span id="status_save" style="margin-left: 10px; color: #0b6;"> </span>
 </div>
 <!-- Painel: Texto para copiar (não bloqueia a página) -->
@@ -1422,11 +1417,11 @@ let isAdmin = false;
       </label>
 </div>
 <div class="row nowrap">
-<label style="min-width: 240px;"><span id="evo_bh_label">BH 24h</span> (mL):
-        <input name="evo_bh_ml" type="text"/>
-</label>
 <label style="min-width: 240px;"><span id="evo_diurese_label">Diurese 24h</span> (mL):
         <input name="evo_diurese_ml" type="text"/>
+</label>
+<label style="min-width: 240px;"><span id="evo_bh_label">BH 24h</span> (mL):
+        <input name="evo_bh_ml" type="text"/>
 </label>
 <label style="min-width: 220px;">Ureia:
         <input name="evo_ureia" type="text"/>
@@ -1902,19 +1897,27 @@ let isAdmin = false;
 </div>
 </div>
 <div class="row nowrap" style="align-items:center; gap:14px; flex-wrap:wrap;">
-<div>Hipoglicemias em 12/24h:</div>
+<div>Hipoglicemias:</div>
 <label><input name="evo_hipo" onclick="evoToggleBox('evo_hipo_wrap', true)" type="radio" value="sim"/> Sim</label>
 <label><input name="evo_hipo" onclick="evoToggleBox('evo_hipo_wrap', false)" type="radio" value="nao"/> Não</label>
-<div class="hidden" id="evo_hipo_wrap" style="flex:1; min-width:260px;">
-<input name="evo_hipo_glicose" placeholder="Quantidade de glicose feita" style="width:100%;" type="text"/>
+<div class="hidden" id="evo_hipo_wrap" style="display: flex; align-items: center; gap: 10px; flex:1; min-width:260px;">
+<select name="evo_hipo_periodo" style="width: 80px;">
+<option value="12h">12h</option>
+<option value="24h">24h</option>
+</select>
+<input name="evo_hipo_glicose" placeholder="Quantidade de glicose feita" style="flex: 1; min-width:180px;" type="text"/>
 </div>
 </div>
 <div class="row nowrap" style="align-items:center; gap:14px; flex-wrap:wrap;">
-<div>Hiperglicemias em 12/24h:</div>
+<div>Hiperglicemias:</div>
 <label><input name="evo_hiper" onclick="evoToggleBox('evo_hiper_wrap', true)" type="radio" value="sim"/> Sim</label>
 <label><input name="evo_hiper" onclick="evoToggleBox('evo_hiper_wrap', false)" type="radio" value="nao"/> Não</label>
-<div class="hidden" id="evo_hiper_wrap" style="flex:1; min-width:260px;">
-<input name="evo_hiper_insulina" placeholder="Quantidade de insulina regular feita" style="width:100%;" type="text"/>
+<div class="hidden" id="evo_hiper_wrap" style="display: flex; align-items: center; gap: 10px; flex:1; min-width:260px;">
+<select name="evo_hiper_periodo" style="width: 80px;">
+<option value="12h">12h</option>
+<option value="24h">24h</option>
+</select>
+<input name="evo_hiper_insulina" placeholder="Quantidade de insulina regular feita" style="flex: 1; min-width:180px;" type="text"/>
 </div>
 </div>
 <div class="row nowrap" style="align-items:center; gap:14px; flex-wrap:wrap;">
@@ -1979,6 +1982,54 @@ let isAdmin = false;
       </label>
 <div class="hidden" id="evo_vasc_txt_wrap" style="flex: 1;">
 <textarea name="evo_vasc_txt" placeholder="Descrever" rows="3" style="width: 100%;"></textarea>
+</div>
+</div>
+<div class="row nowrap" style="align-items: center;">
+<div style="min-width: 120px;">Ortopedia:</div>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_orto" onclick="evoToggleBox('evo_orto_txt_wrap', true)" type="radio" value="sim"/> Sim
+      </label>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_orto" onclick="evoToggleBox('evo_orto_txt_wrap', false)" type="radio" value="nao"/> Não
+      </label>
+<div class="hidden" id="evo_orto_txt_wrap" style="flex: 1;">
+<textarea name="evo_orto_txt" placeholder="Descrever" rows="3" style="width: 100%;"></textarea>
+</div>
+</div>
+<div class="row nowrap" style="align-items: center;">
+<div style="min-width: 120px;">Bucomaxilo:</div>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_buco" onclick="evoToggleBox('evo_buco_txt_wrap', true)" type="radio" value="sim"/> Sim
+      </label>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_buco" onclick="evoToggleBox('evo_buco_txt_wrap', false)" type="radio" value="nao"/> Não
+      </label>
+<div class="hidden" id="evo_buco_txt_wrap" style="flex: 1;">
+<textarea name="evo_buco_txt" placeholder="Descrever" rows="3" style="width: 100%;"></textarea>
+</div>
+</div>
+<div class="row nowrap" style="align-items: center;">
+<div style="min-width: 120px;">Infectologia:</div>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_infecto" onclick="evoToggleBox('evo_infecto_txt_wrap', true)" type="radio" value="sim"/> Sim
+      </label>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_infecto" onclick="evoToggleBox('evo_infecto_txt_wrap', false)" type="radio" value="nao"/> Não
+      </label>
+<div class="hidden" id="evo_infecto_txt_wrap" style="flex: 1;">
+<textarea name="evo_infecto_txt" placeholder="Descrever" rows="3" style="width: 100%;"></textarea>
+</div>
+</div>
+<div class="row nowrap" style="align-items: center;">
+<div style="min-width: 120px;">Neurologia:</div>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_neuro" onclick="evoToggleBox('evo_neuro_txt_wrap', true)" type="radio" value="sim"/> Sim
+      </label>
+<label style="flex-direction: row; align-items: center; gap: 8px;">
+<input name="evo_neuro" onclick="evoToggleBox('evo_neuro_txt_wrap', false)" type="radio" value="nao"/> Não
+      </label>
+<div class="hidden" id="evo_neuro_txt_wrap" style="flex: 1;">
+<textarea name="evo_neuro_txt" placeholder="Descrever" rows="3" style="width: 100%;"></textarea>
 </div>
 </div>
 </div>
@@ -2922,9 +2973,19 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         'evo_bia', 'evo_bia_dia',
         'evo_mp_transv', 'evo_mp_transv_dia', 
         'evo_drenos_outros', 'evo_retirados',
-        // Nutrição (apenas campos de texto, não checkboxes)
-        'evo_dieta_tipo', 'evo_dieta_ml', 'evo_dieta_kcal', 'evo_dieta_ptn',
-        'evo_npt_ml', 'evo_npt_kcal', 'evo_npt_ptn',
+        // Nutrição - TODOS os campos
+        'evo_vet_kcal', 'evo_vet_prot',
+        'evo_dieta_select', 
+        'evo_dieta_kcal_ml', 'evo_dieta_prot_ml',
+        'evo_dieta_mlh', 'evo_dieta_ml20',
+        'evo_kcal_admin', 'evo_prot_admin',
+        'evo_whey_prot_g',
+        'evo_pct_kcal', 'evo_pct_prot',
+        'evo_vomitos', 'evo_distensao',
+        'evo_estase', 'evo_estase_residuo',
+        'evo_hipo', 'evo_hipo_periodo', 'evo_hipo_glicose',
+        'evo_hiper', 'evo_hiper_periodo', 'evo_hiper_insulina',
+        'evo_profilaxia_ulcera',
         // Impressão clínica
         'evo_impressao'
       ];
@@ -3757,13 +3818,15 @@ function evoGerarTexto() {
     }
     var hipo = evoVal('evo_hipo');
     if (hipo) {
+      var hipoPeriodo = evoVal('evo_hipo_periodo') || '24h';
       var hipoGlic = evoVal('evo_hipo_glicose');
-      nut.push('Hipoglicemia: '+hipo + (hipo==='sim' && hipoGlic ? ' ('+hipoGlic+')' : ''));
+      nut.push('Hipoglicemia '+hipoPeriodo+': '+hipo + (hipo==='sim' && hipoGlic ? ' ('+hipoGlic+')' : ''));
     }
     var hiper = evoVal('evo_hiper');
     if (hiper) {
+      var hiperPeriodo = evoVal('evo_hiper_periodo') || '24h';
       var hiperIns = evoVal('evo_hiper_insulina');
-      nut.push('Hiperglicemia: '+hiper + (hiper==='sim' && hiperIns ? ' ('+hiperIns+')' : ''));
+      nut.push('Hiperglicemia '+hiperPeriodo+': '+hiper + (hiper==='sim' && hiperIns ? ' ('+hiperIns+')' : ''));
     }
     var profUlcera = evoVal('evo_profilaxia_ulcera');
     if (profUlcera) nut.push('Profilaxia úlcera estresse: '+profUlcera);
@@ -3779,6 +3842,10 @@ function evoGerarTexto() {
     var i2 = ic('evo_cg','evo_cg_txt'); if (i2) ics.push('CG: '+i2);
     var i3 = ic('evo_ccv','evo_ccv_txt'); if (i3) ics.push('CCV: '+i3);
     var i4 = ic('evo_vasc','evo_vasc_txt'); if (i4) ics.push('Vascular: '+i4);
+    var i5 = ic('evo_orto','evo_orto_txt'); if (i5) ics.push('Ortopedia: '+i5);
+    var i6 = ic('evo_buco','evo_buco_txt'); if (i6) ics.push('Bucomaxilo: '+i6);
+    var i7 = ic('evo_infecto','evo_infecto_txt'); if (i7) ics.push('Infectologia: '+i7);
+    var i8 = ic('evo_neuro','evo_neuro_txt'); if (i8) ics.push('Neurologia: '+i8);
     if (ics.length) { linhas.push('Interconsultas: ' + ics.join(' | ')); linhas.push(''); }
 
     var imp = evoVal('evo_impressao'); if (imp) { linhas.push('Impressão clínica:'); linhas.push(imp); linhas.push(''); }

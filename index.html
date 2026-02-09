@@ -1058,7 +1058,7 @@ let isAdmin = false;
 <div class="hidden" id="analgesia_lista" style="flex: 1;">
 <div class="row" style="margin: 0; gap: 14px; flex-wrap: wrap;">
 <div class="med-item">
-<input id="med_midazolam" name="med_midazolam" onclick="toggleDose('med_midazolam','dose_med_midazolam')" type="checkbox"/>
+<input id="med_midazolam" name="med_midazolam" onclick="toggleDoseWithCalc('med_midazolam','dose_med_midazolam','calc_med_midazolam')" type="checkbox"/>
 <span>Midazolam</span>
 <input class="dose-input hidden" id="dose_med_midazolam" name="dose_med_midazolam" placeholder="μg/kg/h ou ml/h" type="text"/>
 <button class="calc-icon-btn hidden" id="calc_med_midazolam" onclick="openDrugCalc('midazolam', 'dose_med_midazolam')" type="button" title="Calculadora">🧮</button>
@@ -1070,39 +1070,40 @@ let isAdmin = false;
 <button class="calc-icon-btn hidden" id="calc_med_fentanil" onclick="openDrugCalc('fentanil', 'dose_med_fentanil')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_remifentanil" name="med_remifentanil" onclick="toggleDose('med_remifentanil','dose_med_remifentanil')" type="checkbox"/>
+<input id="med_remifentanil" name="med_remifentanil" onclick="toggleDoseWithCalc('med_remifentanil','dose_med_remifentanil','calc_med_remifentanil')" type="checkbox"/>
 <span>Remifentanil</span>
 <input class="dose-input hidden" id="dose_med_remifentanil" name="dose_med_remifentanil" placeholder="μg/kg/min ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_remifentanil" onclick="openDrugCalc('remifentanil', 'dose_med_remifentanil')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_precedex" name="med_precedex" onclick="toggleDose('med_precedex','dose_med_precedex')" type="checkbox"/>
+<input id="med_precedex" name="med_precedex" onclick="toggleDoseWithCalc('med_precedex','dose_med_precedex','calc_med_precedex')" type="checkbox"/>
 <span>Precedex</span>
 <input class="dose-input hidden" id="dose_med_precedex" name="dose_med_precedex" placeholder="μg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_precedex" onclick="openDrugCalc('precedex', 'dose_med_precedex')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_propofol" name="med_propofol" onclick="toggleDose('med_propofol','dose_med_propofol')" type="checkbox"/>
+<input id="med_propofol" name="med_propofol" onclick="toggleDoseWithCalc('med_propofol','dose_med_propofol','calc_med_propofol')" type="checkbox"/>
 <span>Propofol</span>
 <input class="dose-input hidden" id="dose_med_propofol" name="dose_med_propofol" placeholder="mg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_propofol" onclick="openDrugCalc('propofol', 'dose_med_propofol')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_ketamina" name="med_ketamina" onclick="toggleDose('med_ketamina','dose_med_ketamina')" type="checkbox"/>
+<input id="med_ketamina" name="med_ketamina" onclick="toggleDoseWithCalc('med_ketamina','dose_med_ketamina','calc_med_ketamina')" type="checkbox"/>
 <span>Ketamina</span>
 <input class="dose-input hidden" id="dose_med_ketamina" name="dose_med_ketamina" placeholder="μg/kg/min ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_ketamina" onclick="openDrugCalc('ketamina', 'dose_med_ketamina')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_rocuronio" name="med_rocuronio" onclick="toggleDose('med_rocuronio','dose_med_rocuronio')" type="checkbox"/>
+<input id="med_rocuronio" name="med_rocuronio" onclick="toggleDoseWithCalc('med_rocuronio','dose_med_rocuronio','calc_med_rocuronio')" type="checkbox"/>
 <span>Rocurônio</span>
 <input class="dose-input hidden" id="dose_med_rocuronio" name="dose_med_rocuronio" placeholder="mg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_rocuronio" onclick="openDrugCalc('rocuronio', 'dose_med_rocuronio')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_cisatracurio" name="med_cisatracurio" onclick="toggleDose('med_cisatracurio','dose_med_cisatracurio')" type="checkbox"/>
+<input id="med_cisatracurio" name="med_cisatracurio" onclick="toggleDoseWithCalc('med_cisatracurio','dose_med_cisatracurio','calc_med_cisatracurio')" type="checkbox"/>
 <span>Cisatracúrio</span>
 <input class="dose-input hidden" id="dose_med_cisatracurio" name="dose_med_cisatracurio" placeholder="μg/kg/min ou ml/h" type="text"/>
-</div>
-<div class="med-item">
-<input id="med_tramadol" name="med_tramadol" onclick="toggleDose('med_tramadol','dose_med_tramadol')" type="checkbox"/>
-<span>Tramadol</span>
-<input class="dose-input hidden" id="dose_med_tramadol" name="dose_med_tramadol" placeholder="dose/via" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_cisatracurio" onclick="openDrugCalc('cisatracurio', 'dose_med_cisatracurio')" type="button" title="Calculadora">🧮</button>
 </div>
 </div>
 </div>
@@ -1273,6 +1274,17 @@ let isAdmin = false;
 <div class="row">
 <label style="flex: 1; min-width: 100%;">Cirurgias prévias:
         <textarea name="evo_cirurgias" rows="3"></textarea>
+</label>
+</div>
+<div class="row">
+<label style="flex: 1; min-width: 100%;">Alergias:
+        <textarea name="evo_alergias" rows="2"></textarea>
+</label>
+</div>
+<div class="row" style="margin-top: 12px;">
+<label style="flex: 1; min-width: 100%;">
+<strong>Medicações atuais:</strong>
+        <textarea name="evo_medicacoes_atuais" rows="5" placeholder="Todas as medicações em uso (vasopressores, sedativos, antibióticos, profilaxias, etc.)"></textarea>
 </label>
 </div>
 </div>
@@ -1769,49 +1781,52 @@ let isAdmin = false;
 <div class="hidden" id="evo_analgesia_lista" style="margin-top: 8px;">
 <div class="row" style="margin: 0; gap: 14px; flex-wrap: wrap;">
 <div class="med-item">
-<input id="evo_med_midazolam" name="evo_med_midazolam" onclick="toggleDose('evo_med_midazolam','dose_evo_med_midazolam')" type="checkbox"/>
+<input id="evo_med_midazolam" name="evo_med_midazolam" onclick="toggleDoseWithCalc('evo_med_midazolam','dose_evo_med_midazolam','calc_evo_med_midazolam')" type="checkbox"/>
 <span>Midazolam</span>
 <input class="dose-input hidden" id="dose_evo_med_midazolam" name="dose_evo_med_midazolam" placeholder="μg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_midazolam" onclick="openDrugCalc('midazolam', 'dose_evo_med_midazolam')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_fentanil" name="evo_med_fentanil" onclick="toggleDose('evo_med_fentanil','dose_evo_med_fentanil')" type="checkbox"/>
+<input id="evo_med_fentanil" name="evo_med_fentanil" onclick="toggleDoseWithCalc('evo_med_fentanil','dose_evo_med_fentanil','calc_evo_med_fentanil')" type="checkbox"/>
 <span>Fentanil</span>
 <input class="dose-input hidden" id="dose_evo_med_fentanil" name="dose_evo_med_fentanil" placeholder="μg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_fentanil" onclick="openDrugCalc('fentanil', 'dose_evo_med_fentanil')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_remifentanil" name="evo_med_remifentanil" onclick="toggleDose('evo_med_remifentanil','dose_evo_med_remifentanil')" type="checkbox"/>
+<input id="evo_med_remifentanil" name="evo_med_remifentanil" onclick="toggleDoseWithCalc('evo_med_remifentanil','dose_evo_med_remifentanil','calc_evo_med_remifentanil')" type="checkbox"/>
 <span>Remifentanil</span>
 <input class="dose-input hidden" id="dose_evo_med_remifentanil" name="dose_evo_med_remifentanil" placeholder="μg/kg/min ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_remifentanil" onclick="openDrugCalc('remifentanil', 'dose_evo_med_remifentanil')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_precedex" name="evo_med_precedex" onclick="toggleDose('evo_med_precedex','dose_evo_med_precedex')" type="checkbox"/>
+<input id="evo_med_precedex" name="evo_med_precedex" onclick="toggleDoseWithCalc('evo_med_precedex','dose_evo_med_precedex','calc_evo_med_precedex')" type="checkbox"/>
 <span>Precedex</span>
 <input class="dose-input hidden" id="dose_evo_med_precedex" name="dose_evo_med_precedex" placeholder="μg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_precedex" onclick="openDrugCalc('precedex', 'dose_evo_med_precedex')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_propofol" name="evo_med_propofol" onclick="toggleDose('evo_med_propofol','dose_evo_med_propofol')" type="checkbox"/>
+<input id="evo_med_propofol" name="evo_med_propofol" onclick="toggleDoseWithCalc('evo_med_propofol','dose_evo_med_propofol','calc_evo_med_propofol')" type="checkbox"/>
 <span>Propofol</span>
 <input class="dose-input hidden" id="dose_evo_med_propofol" name="dose_evo_med_propofol" placeholder="mg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_propofol" onclick="openDrugCalc('propofol', 'dose_evo_med_propofol')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_ketamina" name="evo_med_ketamina" onclick="toggleDose('evo_med_ketamina','dose_evo_med_ketamina')" type="checkbox"/>
+<input id="evo_med_ketamina" name="evo_med_ketamina" onclick="toggleDoseWithCalc('evo_med_ketamina','dose_evo_med_ketamina','calc_evo_med_ketamina')" type="checkbox"/>
 <span>Ketamina</span>
 <input class="dose-input hidden" id="dose_evo_med_ketamina" name="dose_evo_med_ketamina" placeholder="μg/kg/min ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_ketamina" onclick="openDrugCalc('ketamina', 'dose_evo_med_ketamina')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_rocuronio" name="evo_med_rocuronio" onclick="toggleDose('evo_med_rocuronio','dose_evo_med_rocuronio')" type="checkbox"/>
+<input id="evo_med_rocuronio" name="evo_med_rocuronio" onclick="toggleDoseWithCalc('evo_med_rocuronio','dose_evo_med_rocuronio','calc_evo_med_rocuronio')" type="checkbox"/>
 <span>Rocurônio</span>
 <input class="dose-input hidden" id="dose_evo_med_rocuronio" name="dose_evo_med_rocuronio" placeholder="mg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_rocuronio" onclick="openDrugCalc('rocuronio', 'dose_evo_med_rocuronio')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="evo_med_cisatracurio" name="evo_med_cisatracurio" onclick="toggleDose('evo_med_cisatracurio','dose_evo_med_cisatracurio')" type="checkbox"/>
+<input id="evo_med_cisatracurio" name="evo_med_cisatracurio" onclick="toggleDoseWithCalc('evo_med_cisatracurio','dose_evo_med_cisatracurio','calc_evo_med_cisatracurio')" type="checkbox"/>
 <span>Cisatracúrio</span>
 <input class="dose-input hidden" id="dose_evo_med_cisatracurio" name="dose_evo_med_cisatracurio" placeholder="μg/kg/min ou ml/h" type="text"/>
-</div>
-<div class="med-item">
-<input id="evo_med_tramadol" name="evo_med_tramadol" onclick="toggleDose('evo_med_tramadol','dose_evo_med_tramadol')" type="checkbox"/>
-<span>Tramadol</span>
-<input class="dose-input hidden" id="dose_evo_med_tramadol" name="dose_evo_med_tramadol" placeholder="dose/via" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_evo_med_cisatracurio" onclick="openDrugCalc('cisatracurio', 'dose_evo_med_cisatracurio')" type="button" title="Calculadora">🧮</button>
 </div>
 </div>
 </div>
@@ -2170,15 +2185,6 @@ let isAdmin = false;
 <div class="hidden" id="evo_neuro_txt_wrap" style="flex: 1;">
 <textarea name="evo_neuro_txt" placeholder="Descrever" rows="3" style="width: 100%;"></textarea>
 </div>
-</div>
-</div>
-<!-- Alergias e Medicações -->
-<div class="section">
-<h3>Alergias</h3>
-<div class="row">
-<label style="flex: 1; min-width: 100%;">
-        <textarea name="evo_alergias" rows="2" style="width: 100%;"></textarea>
-</label>
 </div>
 </div>
 <div class="section">
@@ -3142,7 +3148,8 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         'evo_comorbidades', // HPP
         'evo_cirurgias',    // Cirurgias prévias
         'evo_meds',         // Medicações em uso
-        'evo_alergias'      // Alergias
+        'evo_alergias',     // Alergias
+        'evo_medicacoes_atuais' // Medicações atuais
       ];
       
       // Copiar cada campo
@@ -4474,6 +4481,7 @@ function evoGerarTexto() {
     setByName('evo_alergias', vName('alergias'));
     setByName('evo_cirurgias', vName('cirurgias'));
     setByName('evo_meds', vName('med_dom'));
+    setByName('evo_medicacoes_atuais', vName('medicacoes_atuais'));
 
     try { evoCalcularTFGeClCr && evoCalcularTFGeClCr(); } catch(e) {}
     try { evoUpdateBigHeader && evoUpdateBigHeader(); } catch(e) {}
@@ -6214,7 +6222,9 @@ function executarAlta(nomePaciente) {
         .then(function() {
             // Limpar localStorage das evoluções deste leito
             try {
-                localStorage.removeItem('evolucao_last_' + prefixoLeito);
+                var chaveEvolucao = 'evolucao_last_' + ctiAtual + '_' + leitoAtual;
+                localStorage.removeItem(chaveEvolucao);
+                console.log('localStorage limpo:', chaveEvolucao);
             } catch(e) {
                 console.error('Erro ao limpar localStorage:', e);
             }

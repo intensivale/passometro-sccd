@@ -1092,15 +1092,6 @@ let isAdmin = false;
         <textarea name="evo_cirurgias" rows="3"></textarea>
 </label>
 </div>
-<h3>Medicações em uso</h3>
-<div class="row">
-<textarea name="evo_meds" style="width:100%; height:130px;"></textarea>
-</div>
-<div class="row" style="margin-top: 14px;">
-<label style="flex: 1; min-width: 100%;">Alergias:
-        <textarea name="evo_alergias" rows="2"></textarea>
-</label>
-</div>
 </div>
 <!-- Ectoscopia -->
 <div class="section">
@@ -2033,6 +2024,21 @@ let isAdmin = false;
 </div>
 </div>
 </div>
+<!-- Alergias e Medicações -->
+<div class="section">
+<h3>Alergias</h3>
+<div class="row">
+<label style="flex: 1; min-width: 100%;">
+        <textarea name="evo_alergias" rows="2" style="width: 100%;"></textarea>
+</label>
+</div>
+</div>
+<div class="section">
+<h3>Medicações em uso</h3>
+<div class="row">
+<textarea name="evo_meds" style="width:100%; height:130px;"></textarea>
+</div>
+</div>
 <!-- Impressão / Plano -->
 <div class="section">
 <h3>Impressão clínica</h3>
@@ -2950,14 +2956,6 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         'evo_motivo_uti',
         // Problemas atuais
         'evo_problemas',
-        // HPP
-        'evo_comorbidades',
-        // Cirurgias prévias
-        'evo_cirurgias',
-        // Medicações em uso
-        'evo_meds',
-        // Alergias
-        'evo_alergias',
         // Infecção
         'evo_inf_foco', 'evo_inf_atb1', 'evo_inf_dia_atb1', 'evo_inf_total_atb1',
         'evo_inf_atb2', 'evo_inf_dia_atb2', 'evo_inf_total_atb2',
@@ -2990,6 +2988,15 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         'evo_impressao'
       ];
       
+      // CAMPOS QUE SÓ DEVEM SER COPIADOS SE JÁ NÃO FORAM PREENCHIDOS PELA ADMISSÃO
+      // (copia da evolução anterior apenas se estiverem vazios)
+      var camposDaAdmissao = [
+        'evo_comorbidades', // HPP
+        'evo_cirurgias',    // Cirurgias prévias
+        'evo_meds',         // Medicações em uso
+        'evo_alergias'      // Alergias
+      ];
+      
       // Copiar cada campo
       camposParaCopiar.forEach(function(nomeCampo){
         if (typeof data[nomeCampo] === 'undefined') return;
@@ -3010,6 +3017,19 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         } else if (campo.type === 'checkbox') {
           campo.checked = !!data[nomeCampo];
         } else {
+          campo.value = data[nomeCampo] || '';
+        }
+      });
+      
+      // Copiar campos da admissão APENAS se estiverem vazios (não sobrescrever o que veio da admissão)
+      camposDaAdmissao.forEach(function(nomeCampo){
+        if (typeof data[nomeCampo] === 'undefined') return;
+        
+        var campo = area.querySelector('[name="'+nomeCampo+'"]');
+        if (!campo) return;
+        
+        // Só copia se o campo estiver vazio
+        if (!campo.value) {
           campo.value = data[nomeCampo] || '';
         }
       });
@@ -3703,12 +3723,6 @@ function evoGerarTexto() {
     if (trs) renal.push('TRS: '+trs + (trs==='sim' && trsTipo ? ' ('+trsTipo+')' : ''));
     if (renal.length) { linhas.push('Renal/Metabólico: ' + renal.join(' | ')); linhas.push(''); }
 
-    
-    var meds = evoVal('evo_meds');
-    if (meds) {
-        linhas.push('Medicações em uso: ' + meds);
-        linhas.push('');
-    }
 // Infecção
     var foco = evoVal('evo_inf_foco');
     var atbs = [];
@@ -3847,6 +3861,19 @@ function evoGerarTexto() {
     var i7 = ic('evo_infecto','evo_infecto_txt'); if (i7) ics.push('Infectologia: '+i7);
     var i8 = ic('evo_neuro','evo_neuro_txt'); if (i8) ics.push('Neurologia: '+i8);
     if (ics.length) { linhas.push('Interconsultas: ' + ics.join(' | ')); linhas.push(''); }
+
+    // Alergias (se não foi incluída no HPP, mostrar separadamente)
+    if (!al) {
+        var alergiasVal = evoVal('evo_alergias');
+        if (alergiasVal) { linhas.push('Alergias: ' + alergiasVal); linhas.push(''); }
+    }
+    
+    // Medicações em uso
+    var meds = evoVal('evo_meds');
+    if (meds) {
+        linhas.push('Medicações em uso: ' + meds);
+        linhas.push('');
+    }
 
     var imp = evoVal('evo_impressao'); if (imp) { linhas.push('Impressão clínica:'); linhas.push(imp); linhas.push(''); }
     var pl = evoVal('evo_plano_24h'); if (pl) { linhas.push('Plano/metas 24h:'); linhas.push(pl); linhas.push(''); }
@@ -5738,7 +5765,7 @@ Por favor, gere um RESUMO DE ALTA estruturado com:
 5. **HEMOTRANSFUSÕES** (se houver)
 6. **DISPOSITIVOS** (quais foram usados)
 7. **CONDIÇÕES DE ALTA** (baseado na impressão clínica)
-8. **ORIENTAÇÕES PÓS-ALTA** - IMPORTANTE: Base as orientações no PLANO/METAS 24H acima. Transforme as metas do plano em orientações específicas para o paciente/família (ex: se o plano menciona "manter oxigenioterapia", oriente "manter oxigênio domiciliar conforme prescrito"). Inclua também sinais de alerta gerais.
+8. **ORIENTAÇÕES PÓS-ALTA** - Use APENAS o conteúdo do "PLANO/METAS 24H" descrito acima, sem adicionar orientações genéricas.
 
 Use linguagem médica profissional, seja objetivo e conciso. O texto deve estar pronto para ser copiado e colado no sistema hospitalar.`;
 
@@ -5896,56 +5923,12 @@ function gerarResumoManual(dados) {
     linhas.push("8. ORIENTAÇÕES PÓS-ALTA");
     linhas.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     
-    // Usar Plano/Metas 24h para orientações específicas
+    // Usar APENAS o Plano/Metas 24h para orientações
     if (dados.plano24h) {
-        linhas.push("CUIDADOS ESPECÍFICOS (baseados no plano de metas):");
-        
-        // Processar o plano e transformar em orientações
-        var planoLinhas = dados.plano24h.split('\n');
-        planoLinhas.forEach(function(linha) {
-            linha = linha.trim();
-            if (linha && linha.length > 3) {
-                // Remover bullets e formatação
-                linha = linha.replace(/^[-•*]\s*/, '');
-                
-                // Transformar metas em orientações
-                if (linha.toLowerCase().includes('o2') || linha.toLowerCase().includes('oxig')) {
-                    linhas.push("• " + linha.replace(/manter/i, 'Manter').replace(/monitorar/i, 'Monitorar'));
-                } else if (linha.toLowerCase().includes('atb') || linha.toLowerCase().includes('antibio')) {
-                    linhas.push("• " + linha.replace(/completar/i, 'Completar'));
-                } else if (linha.toLowerCase().includes('fisio')) {
-                    linhas.push("• " + linha.replace(/manter/i, 'Realizar'));
-                } else if (linha.toLowerCase().includes('alta')) {
-                    // Pular linhas sobre alta
-                } else {
-                    linhas.push("• " + linha);
-                }
-            }
-        });
-        linhas.push("");
+        linhas.push(dados.plano24h);
+    } else {
+        linhas.push("Manter cuidados gerais conforme orientação médica.");
     }
-    
-    // Orientações gerais sempre presentes
-    linhas.push("ORIENTAÇÕES GERAIS:");
-    linhas.push("• Manter todas as medicações prescritas na alta conforme orientação médica");
-    linhas.push("• Retorno ambulatorial conforme agendamento");
-    linhas.push("• Manter acompanhamento com médico de referência");
-    
-    if (dados.atb1) {
-        var diasRestantes = (parseInt(dados.atb1Total) || 0) - (parseInt(dados.atb1Dias) || 0);
-        if (diasRestantes > 0) {
-            linhas.push("• Completar antibioticoterapia conforme prescrito");
-        }
-    }
-    
-    linhas.push("");
-    linhas.push("SINAIS DE ALERTA - Procurar emergência se apresentar:");
-    linhas.push("• Febre (temperatura > 38°C) ou hipotermia");
-    linhas.push("• Falta de ar ou dificuldade respiratória");
-    linhas.push("• Dor torácica");
-    linhas.push("• Alteração do nível de consciência (sonolência excessiva ou confusão)");
-    linhas.push("• Sinais de sangramento");
-    linhas.push("• Piora importante do estado geral");
     
     linhas.push("");
     linhas.push("═══════════════════════════════════════════════════════");
@@ -6231,8 +6214,14 @@ function verDetalhesAlta(idAlta) {
             texto += 'Data Admissão: ' + formatarData(alta.dataAdmissao) + '\n';
             texto += 'Data Alta: ' + (alta.dataAlta || '-') + '\n\n';
             
+            // RESUMO DE ALTA (se existir)
+            if (alta.resumoAlta) {
+                texto += '\n' + alta.resumoAlta + '\n\n';
+                texto += '═══════════════════════════════════════════════════════\n\n';
+            }
+            
             if (alta.dados) {
-                texto += '--- Dados do Paciente ---\n';
+                texto += '--- Dados do Paciente (complementares) ---\n';
                 if (alta.dados.idade) texto += 'Idade: ' + alta.dados.idade + '\n';
                 if (alta.dados.sexo) texto += 'Sexo: ' + alta.dados.sexo + '\n';
                 if (alta.dados.hma) texto += '\nHMA:\n' + alta.dados.hma + '\n';

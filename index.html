@@ -889,24 +889,28 @@ let isAdmin = false;
     </label>
 </div>
 <div class="row hidden" id="drug_dobutamina">
-<label style="flex: 1; min-width: 100%;">Dobutamina (dose / observações):
-      <input name="dobutamina_dose" style="width: 100%;" type="text"/>
+<label style="flex: 1; min-width: calc(100% - 40px);">Dobutamina (dose / observações):
+      <input id="dobutamina_dose" name="dobutamina_dose" style="width: 100%;" type="text"/>
 </label>
+<button class="calc-icon-btn" onclick="openDrugCalc('dobutamina', 'dobutamina_dose')" type="button" title="Calculadora" style="margin-top: 20px;">🧮</button>
 </div>
 <div class="row hidden" id="drug_milrinona">
-<label style="flex: 1; min-width: 100%;">Milrinona (dose / observações):
-      <input name="milrinona_dose" style="width: 100%;" type="text"/>
+<label style="flex: 1; min-width: calc(100% - 40px);">Milrinona (dose / observações):
+      <input id="milrinona_dose" name="milrinona_dose" style="width: 100%;" type="text"/>
 </label>
+<button class="calc-icon-btn" onclick="openDrugCalc('milrinona', 'milrinona_dose')" type="button" title="Calculadora" style="margin-top: 20px;">🧮</button>
 </div>
 <div class="row hidden" id="drug_noradrenalina">
-<label style="flex: 1; min-width: 100%;">Noradrenalina (dose / observações):
-      <input name="noradrenalina_dose" style="width: 100%;" type="text"/>
+<label style="flex: 1; min-width: calc(100% - 40px);">Noradrenalina (dose / observações):
+      <input id="noradrenalina_dose" name="noradrenalina_dose" style="width: 100%;" type="text"/>
 </label>
+<button class="calc-icon-btn" onclick="openDrugCalc('noradrenalina', 'noradrenalina_dose')" type="button" title="Calculadora" style="margin-top: 20px;">🧮</button>
 </div>
 <div class="row hidden" id="drug_vasopressina">
-<label style="flex: 1; min-width: 100%;">Vasopressina (dose / observações):
-      <input name="vasopressina_dose" style="width: 100%;" type="text"/>
+<label style="flex: 1; min-width: calc(100% - 40px);">Vasopressina (dose / observações):
+      <input id="vasopressina_dose" name="vasopressina_dose" style="width: 100%;" type="text"/>
 </label>
+<button class="calc-icon-btn" onclick="openDrugCalc('vasopressina', 'vasopressina_dose')" type="button" title="Calculadora" style="margin-top: 20px;">🧮</button>
 </div>
 <div class="row" style="align-items: center;">
 <div style="min-width: 120px;">Perfusão:</div>
@@ -1109,17 +1113,6 @@ let isAdmin = false;
 </div>
 </div>
 </div>
-<!-- Medicações atuais -->
-<div class="row" style="margin-top: 20px;">
-<label style="flex: 1; min-width: 100%;">
-<strong>Medicações atuais</strong> (todas as medicações em uso no momento da admissão):
-      <textarea name="medicacoes_atuais" rows="5" placeholder="Liste todas as medicações em uso: vasopressores, sedativos, antibióticos, profilaxias, etc. Exemplo:
-- Noradrenalina 15 ml/h
-- Midazolam 8 ml/h 
-- Meropenem 1g 8/8h
-- Heparina 5000 UI SC 12/12h"></textarea>
-</label>
-</div>
 <!-- Invasivos / Dispositivos -->
 <div class="section">
 <h3>Invasivos / Dispositivos</h3>
@@ -1156,6 +1149,15 @@ let isAdmin = false;
 <div class="row">
 <label style="flex: 1; min-width: 100%;">Drenos / outros:
       <textarea name="drenos_outros" rows="3"></textarea>
+</label>
+</div>
+</div>
+<!-- Medicações Atuais -->
+<div class="section">
+<h3>Medicações Atuais</h3>
+<div class="row">
+<label style="flex: 1; min-width: 100%;">
+        <textarea name="medicacoes_atuais" rows="4" placeholder="Liste todas as medicações em uso no momento da admissão (vasopressores, sedativos, antibióticos, profilaxias, etc.)"></textarea>
 </label>
 </div>
 </div>
@@ -1450,26 +1452,30 @@ let isAdmin = false;
 <label style="flex-direction: row; align-items: center; gap: 8px; min-width: unset;">
 <input id="evo_chk_dobutamina" onclick="evoToggleHemoDrug('dobutamina')" type="checkbox"/> Dobutamina
       </label>
-<div class="hidden" id="evo_drug_dobutamina" style="min-width: 220px;">
-<input name="evo_dobutamina_dose" placeholder="dose" type="text"/>
+<div class="hidden" id="evo_drug_dobutamina" style="min-width: 220px; display: flex; gap: 8px; align-items: center;">
+<input id="evo_dobutamina_dose" name="evo_dobutamina_dose" placeholder="dose" type="text" style="flex: 1;"/>
+<button class="calc-icon-btn" onclick="openDrugCalc('dobutamina', 'evo_dobutamina_dose')" type="button" title="Calculadora">🧮</button>
 </div>
 <label style="flex-direction: row; align-items: center; gap: 8px; min-width: unset;">
 <input id="evo_chk_milrinona" onclick="evoToggleHemoDrug('milrinona')" type="checkbox"/> Milrinona
       </label>
-<div class="hidden" id="evo_drug_milrinona" style="min-width: 220px;">
-<input name="evo_milrinona_dose" placeholder="dose" type="text"/>
+<div class="hidden" id="evo_drug_milrinona" style="min-width: 220px; display: flex; gap: 8px; align-items: center;">
+<input id="evo_milrinona_dose" name="evo_milrinona_dose" placeholder="dose" type="text" style="flex: 1;"/>
+<button class="calc-icon-btn" onclick="openDrugCalc('milrinona', 'evo_milrinona_dose')" type="button" title="Calculadora">🧮</button>
 </div>
 <label style="flex-direction: row; align-items: center; gap: 8px; min-width: unset;">
 <input id="evo_chk_noradrenalina" onclick="evoToggleHemoDrug('noradrenalina')" type="checkbox"/> Noradrenalina
       </label>
-<div class="hidden" id="evo_drug_noradrenalina" style="min-width: 220px;">
-<input name="evo_noradrenalina_dose" placeholder="dose" type="text"/>
+<div class="hidden" id="evo_drug_noradrenalina" style="min-width: 220px; display: flex; gap: 8px; align-items: center;">
+<input id="evo_noradrenalina_dose" name="evo_noradrenalina_dose" placeholder="dose" type="text" style="flex: 1;"/>
+<button class="calc-icon-btn" onclick="openDrugCalc('noradrenalina', 'evo_noradrenalina_dose')" type="button" title="Calculadora">🧮</button>
 </div>
 <label style="flex-direction: row; align-items: center; gap: 8px; min-width: unset;">
 <input id="evo_chk_vasopressina" onclick="evoToggleHemoDrug('vasopressina')" type="checkbox"/> Vasopressina
       </label>
-<div class="hidden" id="evo_drug_vasopressina" style="min-width: 220px;">
-<input name="evo_vasopressina_dose" placeholder="dose" type="text"/>
+<div class="hidden" id="evo_drug_vasopressina" style="min-width: 220px; display: flex; gap: 8px; align-items: center;">
+<input id="evo_vasopressina_dose" name="evo_vasopressina_dose" placeholder="dose" type="text" style="flex: 1;"/>
+<button class="calc-icon-btn" onclick="openDrugCalc('vasopressina', 'evo_vasopressina_dose')" type="button" title="Calculadora">🧮</button>
 </div>
 </div>
 <div class="row nowrap" style="align-items: center;">
@@ -6879,7 +6885,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     <div class="drug-calc-buttons">
         <button class="drug-calc-btn drug-calc-btn-cancel" onclick="closeDrugCalc()" type="button">Cancelar</button>
-        <button class="drug-calc-btn drug-calc-btn-apply" onclick="applyDrugCalc()" type="button">💾 Aplicar ml/h</button>
+        <button class="drug-calc-btn drug-calc-btn-apply" onclick="applyDrugCalc()" type="button">✅ Aplicar Dose</button>
     </div>
 </div>
 </div>
@@ -7151,13 +7157,48 @@ function checkTherapeuticWindow(dose, windows, unit) {
 }
 
 function applyDrugCalc() {
-  var mlh = document.getElementById('drugCalcMlh').value;
-  if (mlh && currentTargetFieldId) {
-    var field = document.getElementById(currentTargetFieldId);
-    if (field) {
-      field.value = mlh + ' ml/h';
-    }
+  if (!currentDrugId || !currentTargetFieldId) return;
+  
+  var drug = DRUG_DATA[currentDrugId];
+  var weight = parseFloat(document.getElementById('drugCalcWeight').value.replace(',', '.'));
+  var solIdx = parseInt(document.getElementById('drugCalcSolution').value);
+  var mlh = parseFloat(document.getElementById('drugCalcMlh').value.replace(',', '.'));
+  
+  if (!drug || !weight || weight <= 0 || !mlh || mlh < 0) {
+    alert('⚠️ Preencha peso e ml/h corretamente para aplicar a dose');
+    return;
   }
+  
+  var sol = drug.solutions[solIdx];
+  var doseText = '';
+  
+  // Calcular dose baseado no tipo de unidade
+  if (drug.primaryKey === 'mcg_kg_min') {
+    var mcgPerMin = (sol.conc * mlh) / 60;
+    var dose = mcgPerMin / weight;
+    doseText = dose.toFixed(3).replace('.', ',') + ' ' + drug.primaryUnit + ' (' + mlh.toFixed(1).replace('.', ',') + ' ml/h)';
+    
+  } else if (drug.primaryKey === 'mcg_kg_h') {
+    var mcgPerH = sol.conc * mlh;
+    var dose = mcgPerH / weight;
+    doseText = dose.toFixed(3).replace('.', ',') + ' ' + drug.primaryUnit + ' (' + mlh.toFixed(1).replace('.', ',') + ' ml/h)';
+    
+  } else if (drug.primaryKey === 'mg_kg_h') {
+    var mcgPerH = sol.conc * mlh;
+    var mgPerH = mcgPerH / 1000;
+    var dose = mgPerH / weight;
+    doseText = dose.toFixed(3).replace('.', ',') + ' ' + drug.primaryUnit + ' (' + mlh.toFixed(1).replace('.', ',') + ' ml/h)';
+    
+  } else if (drug.primaryKey === 'ui_min') {
+    var dose = (sol.conc * mlh) / 60;
+    doseText = dose.toFixed(4).replace('.', ',') + ' ' + drug.primaryUnit + ' (' + mlh.toFixed(1).replace('.', ',') + ' ml/h)';
+  }
+  
+  var field = document.getElementById(currentTargetFieldId);
+  if (field) {
+    field.value = doseText;
+  }
+  
   closeDrugCalc();
 }
 

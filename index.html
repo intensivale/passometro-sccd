@@ -251,6 +251,211 @@
     .sync-ok { background: #c8e6c9; color: #2e7d32; }
     .sync-error { background: #ffcdd2; color: #c62828; }
     .sync-pending { background: #fff9c4; color: #f57f17; }
+
+    /* === CALCULADORA DE DROGAS === */
+    #drugCalcModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.75);
+      z-index: 10001;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    #drugCalcModal.show { display: flex; }
+    .drug-calc-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+    .drug-calc-header {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+      color: white;
+      padding: 18px 24px;
+      border-radius: 12px 12px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .drug-calc-header h3 { margin: 0; font-size: 20px; font-weight: 600; }
+    .drug-calc-close {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .drug-calc-close:hover { background: rgba(255,255,255,0.3); }
+    .drug-calc-body {
+      padding: 24px;
+    }
+    .drug-calc-section {
+      margin-bottom: 20px;
+    }
+    .drug-calc-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1565c0;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e3f2fd;
+    }
+    .drug-calc-field {
+      margin-bottom: 16px;
+    }
+    .drug-calc-field label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      color: #555;
+    }
+    .drug-calc-field input, .drug-calc-field select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .drug-calc-field input:focus, .drug-calc-field select:focus {
+      border-color: #1565c0;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+    }
+    .drug-calc-field small {
+      display: block;
+      margin-top: 4px;
+      color: #777;
+      font-size: 12px;
+    }
+    .drug-calc-result-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border: 2px solid #1565c0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+    .drug-calc-result-title {
+      font-weight: 700;
+      color: #0d47a1;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+    .drug-calc-result-main {
+      font-size: 32px;
+      font-weight: 700;
+      color: #0d47a1;
+      margin: 8px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .drug-calc-result-unit {
+      font-size: 18px;
+      color: #555;
+      font-weight: 500;
+    }
+    .drug-calc-range {
+      background: white;
+      border-left: 4px solid #4caf50;
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    .drug-calc-range.ok {
+      border-left-color: #4caf50;
+      background: #f1f8f4;
+    }
+    .drug-calc-range.warn {
+      border-left-color: #ff9800;
+      background: #fff8e1;
+    }
+    .drug-calc-range.danger {
+      border-left-color: #f44336;
+      background: #ffebee;
+    }
+    .drug-calc-range strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .drug-calc-note {
+      background: #fff3e0;
+      border: 1px solid #ffb74d;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 12px;
+      color: #e65100;
+      line-height: 1.5;
+    }
+    .drug-calc-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+      justify-content: flex-end;
+    }
+    .drug-calc-btn {
+      padding: 10px 24px;
+      border-radius: 6px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .drug-calc-btn-apply {
+      background: #1565c0;
+      color: white;
+    }
+    .drug-calc-btn-apply:hover {
+      background: #0d47a1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+    }
+    .drug-calc-btn-cancel {
+      background: #f5f5f5;
+      color: #333;
+    }
+    .drug-calc-btn-cancel:hover {
+      background: #e0e0e0;
+    }
+    .calc-icon-btn {
+      background: #1565c0;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      width: 26px;
+      height: 26px;
+      font-size: 15px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      padding: 0;
+      transition: all 0.2s;
+    }
+    .calc-icon-btn:hover {
+      background: #0d47a1;
+      transform: scale(1.1);
+    }
 </style>
 
 <!-- Firebase SDK -->
@@ -856,11 +1061,13 @@ let isAdmin = false;
 <input id="med_midazolam" name="med_midazolam" onclick="toggleDose('med_midazolam','dose_med_midazolam')" type="checkbox"/>
 <span>Midazolam</span>
 <input class="dose-input hidden" id="dose_med_midazolam" name="dose_med_midazolam" placeholder="μg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_midazolam" onclick="openDrugCalc('midazolam', 'dose_med_midazolam')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
-<input id="med_fentanil" name="med_fentanil" onclick="toggleDose('med_fentanil','dose_med_fentanil')" type="checkbox"/>
+<input id="med_fentanil" name="med_fentanil" onclick="toggleDoseWithCalc('med_fentanil','dose_med_fentanil','calc_med_fentanil')" type="checkbox"/>
 <span>Fentanil</span>
 <input class="dose-input hidden" id="dose_med_fentanil" name="dose_med_fentanil" placeholder="μg/kg/h ou ml/h" type="text"/>
+<button class="calc-icon-btn hidden" id="calc_med_fentanil" onclick="openDrugCalc('fentanil', 'dose_med_fentanil')" type="button" title="Calculadora">🧮</button>
 </div>
 <div class="med-item">
 <input id="med_remifentanil" name="med_remifentanil" onclick="toggleDose('med_remifentanil','dose_med_remifentanil')" type="checkbox"/>
@@ -900,6 +1107,17 @@ let isAdmin = false;
 </div>
 </div>
 </div>
+</div>
+<!-- Medicações atuais -->
+<div class="row" style="margin-top: 20px;">
+<label style="flex: 1; min-width: 100%;">
+<strong>Medicações atuais</strong> (todas as medicações em uso no momento da admissão):
+      <textarea name="medicacoes_atuais" rows="5" placeholder="Liste todas as medicações em uso: vasopressores, sedativos, antibióticos, profilaxias, etc. Exemplo:
+- Noradrenalina 15 ml/h
+- Midazolam 8 ml/h 
+- Meropenem 1g 8/8h
+- Heparina 5000 UI SC 12/12h"></textarea>
+</label>
 </div>
 <!-- Invasivos / Dispositivos -->
 <div class="section">
@@ -6609,6 +6827,366 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 </div><!-- Fecha mainContent -->
+
+<!-- MODAL: Calculadora de Drogas -->
+<div id="drugCalcModal">
+<div class="drug-calc-content">
+<div class="drug-calc-header">
+    <h3 id="drugCalcTitle">Calculadora de Droga</h3>
+    <button class="drug-calc-close" onclick="closeDrugCalc()" type="button">&times;</button>
+</div>
+<div class="drug-calc-body">
+    <div class="drug-calc-section">
+        <div class="drug-calc-section-title">Dados do Paciente</div>
+        <div class="drug-calc-field">
+            <label for="drugCalcWeight">Peso (kg)</label>
+            <input type="text" id="drugCalcWeight" placeholder="Ex: 70 ou 70,5" />
+            <small>Necessário para cálculos por kg</small>
+        </div>
+    </div>
+    
+    <div class="drug-calc-section">
+        <div class="drug-calc-section-title">Diluição e Infusão</div>
+        <div class="drug-calc-field">
+            <label for="drugCalcSolution">Diluição / Solução</label>
+            <select id="drugCalcSolution">
+                <option value="0">Carregando...</option>
+            </select>
+        </div>
+        
+        <div class="drug-calc-field">
+            <label for="drugCalcMlh">Vazão da Bomba (ml/h)</label>
+            <input type="text" id="drugCalcMlh" placeholder="Ex: 12 ou 12,5" />
+            <small>Informe a vazão atual ou desejada em ml/h</small>
+        </div>
+    </div>
+    
+    <div id="drugCalcResult"></div>
+    
+    <div class="drug-calc-note">
+        ⚠️ <strong>Atenção:</strong> Esta é uma ferramenta de apoio. Sempre confirme: apresentação do frasco/ampola, concentração real preparada, estabilidade e protocolos locais. Recomenda-se dupla checagem.
+    </div>
+    
+    <div class="drug-calc-buttons">
+        <button class="drug-calc-btn drug-calc-btn-cancel" onclick="closeDrugCalc()" type="button">Cancelar</button>
+        <button class="drug-calc-btn drug-calc-btn-apply" onclick="applyDrugCalc()" type="button">💾 Aplicar ml/h</button>
+    </div>
+</div>
+</div>
+</div>
+
+<script>
+// ===== CALCULADORA DE DROGAS =====
+const DRUG_DATA = {
+  'midazolam': {
+    name: 'Midazolam',
+    primaryUnit: 'μg/kg/h',
+    primaryKey: 'mcg_kg_h',
+    solutions: [
+      { label: 'SG 5% 160ml + Midaz. 40ml (1000 μg/ml)', conc: 1000, unit: 'mcg/ml' },
+      { label: 'SG 5% 120ml + Midaz. 80ml (2000 μg/ml)', conc: 2000, unit: 'mcg/ml' },
+      { label: 'Midazolam 60ml (5000 μg/ml)', conc: 5000, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Sedação leve', min: 20, max: 100, unit: 'μg/kg/h' },
+      { label: 'Sedação moderada a profunda', min: 100, max: 300, unit: 'μg/kg/h' }
+    ]
+  },
+  'fentanil': {
+    name: 'Fentanil',
+    primaryUnit: 'μg/kg/h',
+    primaryKey: 'mcg_kg_h',
+    solutions: [
+      { label: 'SG 5% 80ml + Fent. 20ml (10 μg/ml)', conc: 10, unit: 'mcg/ml' },
+      { label: 'SG 5% 60ml + Fent. 40ml (20 μg/ml)', conc: 20, unit: 'mcg/ml' },
+      { label: 'Fentanil 60ml (50 μg/ml)', conc: 50, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção', min: 0.7, max: 10, unit: 'μg/kg/h' }
+    ]
+  },
+  'remifentanil': {
+    name: 'Remifentanil',
+    primaryUnit: 'μg/kg/min',
+    primaryKey: 'mcg_kg_min',
+    solutions: [
+      { label: 'SF ou SG5% 100ml + 2mg (20 μg/ml)', conc: 20, unit: 'mcg/ml' },
+      { label: 'SF ou SG5% 100ml + 4mg (40 μg/ml)', conc: 40, unit: 'mcg/ml' },
+      { label: 'SF ou SG5% 100ml + 5mg (50 μg/ml)', conc: 50, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Sedação leve a moderada', min: 0.05, max: 0.1, unit: 'μg/kg/min' },
+      { label: 'Sedação profunda/VM', min: 0.1, max: 0.2, unit: 'μg/kg/min' }
+    ]
+  },
+  'precedex': {
+    name: 'Dexmedetomidina (PRECEDEX)',
+    primaryUnit: 'μg/kg/h',
+    primaryKey: 'mcg_kg_h',
+    solutions: [
+      { label: 'SF 96ml + Dexmedetomidina 4ml (4 μg/ml)', conc: 4, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção', min: 0.2, max: 0.7, unit: 'μg/kg/h' }
+    ]
+  },
+  'propofol': {
+    name: 'Propofol',
+    primaryUnit: 'mg/kg/h',
+    primaryKey: 'mg_kg_h',
+    solutions: [
+      { label: 'Propofol 1% (10 mg/ml)', conc: 10000, unit: 'mcg/ml' },
+      { label: 'Propofol 2% (20 mg/ml)', conc: 20000, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção usual', min: 1.5, max: 4.5, unit: 'mg/kg/h' },
+      { label: 'Máxima (ref.)', min: 6, max: 12, unit: 'mg/kg/h' }
+    ]
+  },
+  'ketamina': {
+    name: 'Ketamina',
+    primaryUnit: 'μg/kg/min',
+    primaryKey: 'mcg_kg_min',
+    solutions: [
+      { label: 'SG5% ou SF 240ml + 10ml Ketamina (2000 μg/ml)', conc: 2000, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção', min: 2, max: 7, unit: 'μg/kg/min' }
+    ]
+  },
+  'cisatracurio': {
+    name: 'Cisatracúrio',
+    primaryUnit: 'μg/kg/min',
+    primaryKey: 'mcg_kg_min',
+    solutions: [
+      { label: 'SG 5% ou SF 50ml + Cisatracúrio 20mg (50ml) (1000 μg/ml)', conc: 1000, unit: 'mcg/ml' },
+      { label: 'SG 5% ou SF 80ml + Cisatracúrio 20mg (20ml) (400 μg/ml)', conc: 400, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção', min: 1, max: 3, unit: 'μg/kg/min' }
+    ]
+  },
+  'rocuronio': {
+    name: 'Rocurônio',
+    primaryUnit: 'mg/kg/h',
+    primaryKey: 'mg_kg_h',
+    solutions: [
+      { label: 'SF ou SG5% 190ml + 10ml (100mg) (0,5 mg/ml)', conc: 500, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção', min: 0.48, max: 0.72, unit: 'mg/kg/h' }
+    ]
+  },
+  'dobutamina': {
+    name: 'Dobutamina',
+    primaryUnit: 'μg/kg/min',
+    primaryKey: 'mcg_kg_min',
+    solutions: [
+      { label: 'SG 5% ou SF 230ml + Dobut. 20ml (1000 μg/ml)', conc: 1000, unit: 'mcg/ml' },
+      { label: 'SG 5% ou SF 210ml + Dobut. 40ml (2000 μg/ml)', conc: 2000, unit: 'mcg/ml' },
+      { label: 'SG 5% ou SF 190ml + Dobut. 60ml (3000 μg/ml)', conc: 3000, unit: 'mcg/ml' },
+      { label: 'Dobutamina 60ml (12.500 μg/ml)', conc: 12500, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Dose terapêutica', min: 2.5, max: 20, unit: 'μg/kg/min' }
+    ]
+  },
+  'milrinona': {
+    name: 'Milrinona',
+    primaryUnit: 'μg/kg/min',
+    primaryKey: 'mcg_kg_min',
+    solutions: [
+      { label: 'SG5% ou SF 180ml + Milrinona 20ml (100 μg/ml)', conc: 100, unit: 'mcg/ml' },
+      { label: 'SG5% ou SF 80ml + Milrinona 20ml (200 μg/ml)', conc: 200, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Manutenção', min: 0.375, max: 0.750, unit: 'μg/kg/min' }
+    ]
+  },
+  'noradrenalina': {
+    name: 'Noradrenalina',
+    primaryUnit: 'μg/kg/min',
+    primaryKey: 'mcg_kg_min',
+    solutions: [
+      { label: 'SG 5% 180ml + Nora 20ml (100 μg/ml)', conc: 100, unit: 'mcg/ml' },
+      { label: 'SG 5% 160ml + Nora 40ml (200 μg/ml)', conc: 200, unit: 'mcg/ml' }
+    ],
+    windows: [
+      { label: 'Dose usual', min: 0.05, max: 2, unit: 'μg/kg/min' }
+    ]
+  },
+  'vasopressina': {
+    name: 'Vasopressina',
+    primaryUnit: 'UI/min',
+    primaryKey: 'ui_min',
+    solutions: [
+      { label: 'SF 0,9% 98ml + Vaso 2ml (0,4 UI/ml)', conc: 0.4, unit: 'ui/ml' },
+      { label: 'SF 0,9% 99ml + Vaso 1ml (0,2 UI/ml)', conc: 0.2, unit: 'ui/ml' }
+    ],
+    windows: [
+      { label: 'Dose usual', min: 0.01, max: 0.04, unit: 'UI/min' }
+    ]
+  }
+};
+
+let currentDrugId = null;
+let currentTargetFieldId = null;
+
+function openDrugCalc(drugId, targetFieldId) {
+  currentDrugId = drugId;
+  currentTargetFieldId = targetFieldId;
+  
+  var drug = DRUG_DATA[drugId];
+  if (!drug) return;
+  
+  document.getElementById('drugCalcTitle').textContent = drug.name;
+  
+  var solSelect = document.getElementById('drugCalcSolution');
+  solSelect.innerHTML = '';
+  drug.solutions.forEach(function(sol, idx) {
+    var opt = document.createElement('option');
+    opt.value = idx;
+    opt.textContent = sol.label;
+    solSelect.appendChild(opt);
+  });
+  
+  document.getElementById('drugCalcWeight').value = document.getElementById('peso')?.value || '';
+  document.getElementById('drugCalcMlh').value = '';
+  document.getElementById('drugCalcResult').innerHTML = '<p style="color: #999;">Informe a solução e ml/h para calcular</p>';
+  
+  document.getElementById('drugCalcModal').classList.add('show');
+}
+
+function closeDrugCalc() {
+  document.getElementById('drugCalcModal').classList.remove('show');
+  currentDrugId = null;
+  currentTargetFieldId = null;
+}
+
+function calculateDrug() {
+  var drug = DRUG_DATA[currentDrugId];
+  if (!drug) return;
+  
+  var weight = parseFloat(document.getElementById('drugCalcWeight').value.replace(',', '.'));
+  var solIdx = parseInt(document.getElementById('drugCalcSolution').value);
+  var mlh = parseFloat(document.getElementById('drugCalcMlh').value.replace(',', '.'));
+  
+  if (!weight || weight <= 0) {
+    document.getElementById('drugCalcResult').innerHTML = '<p style="color: #f44336;">⚠️ Peso inválido</p>';
+    return;
+  }
+  
+  if (!mlh || mlh < 0) {
+    document.getElementById('drugCalcResult').innerHTML = '<p style="color: #f44336;">⚠️ Informe ml/h válido</p>';
+    return;
+  }
+  
+  var sol = drug.solutions[solIdx];
+  var result = '';
+  var dose = 0;
+  
+  if (drug.primaryKey === 'mcg_kg_min') {
+    var mcgPerMin = (sol.conc * mlh) / 60;
+    dose = mcgPerMin / weight;
+    result = formatNumber(dose, 3);
+    result += checkTherapeuticWindow(dose, drug.windows, drug.primaryUnit);
+    
+  } else if (drug.primaryKey === 'mcg_kg_h') {
+    var mcgPerH = sol.conc * mlh;
+    dose = mcgPerH / weight;
+    result = formatNumber(dose, 3);
+    result += checkTherapeuticWindow(dose, drug.windows, drug.primaryUnit);
+    
+  } else if (drug.primaryKey === 'mg_kg_h') {
+    var mcgPerH = sol.conc * mlh;
+    var mgPerH = mcgPerH / 1000;
+    dose = mgPerH / weight;
+    result = formatNumber(dose, 3);
+    result += checkTherapeuticWindow(dose, drug.windows, drug.primaryUnit);
+    
+  } else if (drug.primaryKey === 'ui_min') {
+    dose = (sol.conc * mlh) / 60;
+    result = formatNumber(dose, 4);
+    result += checkTherapeuticWindow(dose, drug.windows, drug.primaryUnit);
+  }
+  
+  document.getElementById('drugCalcResult').innerHTML = result;
+}
+
+function formatNumber(num, decimals) {
+  var formatted = num.toFixed(decimals).replace('.', ',');
+  return '<div class="drug-calc-result-box"><div class="drug-calc-result-title">Dose calculada:</div><div class="drug-calc-result-main">' + formatted + ' <span class="drug-calc-result-unit">' + DRUG_DATA[currentDrugId].primaryUnit + '</span></div></div>';
+}
+
+function checkTherapeuticWindow(dose, windows, unit) {
+  if (!windows || windows.length === 0) return '';
+  
+  var html = '';
+  windows.forEach(function(w) {
+    var cssClass = 'ok';
+    var status = '✓ Dentro da faixa';
+    
+    if (dose < w.min) {
+      cssClass = 'warn';
+      status = '⚠️ Abaixo da faixa';
+    } else if (dose > w.max) {
+      cssClass = 'danger';
+      status = '⚠️ Acima da faixa';
+    }
+    
+    html += '<div class="drug-calc-range ' + cssClass + '"><strong>' + w.label + '</strong><div>' + status + ': ' + w.min + ' – ' + w.max + ' ' + w.unit + '</div></div>';
+  });
+  
+  return html;
+}
+
+function applyDrugCalc() {
+  var mlh = document.getElementById('drugCalcMlh').value;
+  if (mlh && currentTargetFieldId) {
+    var field = document.getElementById(currentTargetFieldId);
+    if (field) {
+      field.value = mlh + ' ml/h';
+    }
+  }
+  closeDrugCalc();
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  var solSelect = document.getElementById('drugCalcSolution');
+  var mlhInput = document.getElementById('drugCalcMlh');
+  var weightInput = document.getElementById('drugCalcWeight');
+  
+  if (solSelect) solSelect.addEventListener('change', calculateDrug);
+  if (mlhInput) mlhInput.addEventListener('input', calculateDrug);
+  if (weightInput) weightInput.addEventListener('input', calculateDrug);
+  
+  var modal = document.getElementById('drugCalcModal');
+  if (modal) {
+    modal.addEventListener('click', function(e) {
+      if (e.target === this) closeDrugCalc();
+    });
+  }
+});
+
+// Modificar toggleDose para mostrar/esconder botão calculadora
+function toggleDoseWithCalc(checkId, doseId, calcId) {
+  var chk = document.getElementById(checkId);
+  var dose = document.getElementById(doseId);
+  var calc = calcId ? document.getElementById(calcId) : null;
+  
+  if (chk && dose) {
+    if (chk.checked) {
+      dose.classList.remove('hidden');
+      if (calc) calc.classList.remove('hidden');
+    } else {
+      dose.classList.add('hidden');
+      if (calc) calc.classList.add('hidden');
+      dose.value = '';
+    }
+  }
+}
+</script>
 
 </body>
 </html>

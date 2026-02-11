@@ -4534,8 +4534,24 @@ function evoGerarTexto() {
 
   function evoAutoFromAdmissao() {
     // Copiar identificação completa + HPP/Alergias/Cirurgias/Medicações da admissão
-    function byName(n){ return document.querySelector('[name="'+n+'"]'); }
-    function vName(n){ var el = byName(n); return el ? (el.value || '') : ''; }
+    
+    function getValueById(id) {
+      var el = document.getElementById(id);
+      return el ? (el.value || '') : '';
+    }
+    
+    function getValueByName(name) {
+      // Buscar campo que NÃO está dentro de evolucaoArea
+      var campos = document.querySelectorAll('[name="'+name+'"]');
+      for (var i = 0; i < campos.length; i++) {
+        // Pegar o que não está dentro da evolução
+        var parents = campos[i].closest('#evolucaoArea');
+        if (!parents) {
+          return campos[i].value || '';
+        }
+      }
+      return '';
+    }
 
     var area = byId('evolucaoArea');
     if (!area) return;
@@ -4546,13 +4562,13 @@ function evoGerarTexto() {
     }
 
     // Identificação
-    setByName('evo_nome', vName('nome'));
-    setByName('evo_idade', vName('idade'));
-    setByName('evo_sexo', vName('sexo'));
-    setByName('evo_peso', vName('peso'));
-    setByName('evo_altura', vName('altura')); // cm
-    setByName('evo_imc', vName('imc'));
-    var pbwVal = vName('peso_predito');
+    setByName('evo_nome', getValueByName('nome'));
+    setByName('evo_idade', getValueByName('idade'));
+    setByName('evo_sexo', getValueByName('sexo'));
+    setByName('evo_peso', getValueByName('peso'));
+    setByName('evo_altura', getValueByName('altura'));
+    setByName('evo_imc', getValueByName('imc'));
+    var pbwVal = getValueByName('peso_predito');
     if (!pbwVal) {
       var pbwEl = byId('pbw');
       pbwVal = pbwEl ? (pbwEl.value || '') : '';
@@ -4560,41 +4576,41 @@ function evoGerarTexto() {
     setByName('evo_pbw', pbwVal);
 
     // HPP / Alergias / Cirurgias / Medicações
-    setByName('evo_comorbidades', vName('hpp'));
-    setByName('evo_alergias', vName('alergias'));
-    setByName('evo_cirurgias', vName('cirurgias'));
-    setByName('evo_meds', vName('med_dom'));
-    setByName('evo_medicacoes_atuais', vName('medicacoes_atuais'));
+    setByName('evo_comorbidades', getValueByName('hpp'));
+    setByName('evo_alergias', getValueByName('alergias'));
+    setByName('evo_cirurgias', getValueByName('cirurgias'));
+    setByName('evo_meds', getValueByName('med_dom'));
+    setByName('evo_medicacoes_atuais', getValueByName('medicacoes_atuais'));
     
-    // Infecção - ATB
-    setByName('evo_inf_foco', vName('inf_foco'));
-    setByName('evo_inf_atb1', vName('inf_atb1'));
-    setByName('evo_inf_data_atb1', vName('inf_data_atb1'));
-    setByName('evo_inf_total_atb1', vName('inf_total_atb1'));
-    setByName('evo_inf_atb2', vName('inf_atb2'));
-    setByName('evo_inf_data_atb2', vName('inf_data_atb2'));
-    setByName('evo_inf_total_atb2', vName('inf_total_atb2'));
-    setByName('evo_inf_atb3', vName('inf_atb3'));
-    setByName('evo_inf_data_atb3', vName('inf_data_atb3'));
-    setByName('evo_inf_total_atb3', vName('inf_total_atb3'));
+    // Infecção - ATB (usar IDs para garantir)
+    setByName('evo_inf_foco', getValueByName('inf_foco'));
+    setByName('evo_inf_atb1', getValueByName('inf_atb1'));
+    setByName('evo_inf_data_atb1', getValueById('inf_data_atb1'));
+    setByName('evo_inf_total_atb1', getValueByName('inf_total_atb1'));
+    setByName('evo_inf_atb2', getValueByName('inf_atb2'));
+    setByName('evo_inf_data_atb2', getValueById('inf_data_atb2'));
+    setByName('evo_inf_total_atb2', getValueByName('inf_total_atb2'));
+    setByName('evo_inf_atb3', getValueByName('inf_atb3'));
+    setByName('evo_inf_data_atb3', getValueById('inf_data_atb3'));
+    setByName('evo_inf_total_atb3', getValueByName('inf_total_atb3'));
     
-    // Invasivos
-    setByName('evo_cvc_local', vName('cvc_local'));
-    setByName('evo_cvc_data', vName('cvc_data'));
-    setByName('evo_art_local', vName('art_local'));
-    setByName('evo_art_data', vName('art_data'));
-    setByName('evo_hd_local', vName('hd_local'));
-    setByName('evo_hd_data', vName('hd_data'));
-    setByName('evo_svd_local', vName('svd_local'));
-    setByName('evo_svd_data', vName('svd_data'));
-    setByName('evo_tot_local', vName('tot_local'));
-    setByName('evo_tot_data', vName('tot_data'));
+    // Invasivos (usar IDs para garantir)
+    setByName('evo_cvc_local', getValueByName('cvc_local'));
+    setByName('evo_cvc_data', getValueById('cvc_data'));
+    setByName('evo_art_local', getValueByName('art_local'));
+    setByName('evo_art_data', getValueById('art_data'));
+    setByName('evo_hd_local', getValueByName('hd_local'));
+    setByName('evo_hd_data', getValueById('hd_data'));
+    setByName('evo_svd_local', getValueByName('svd_local'));
+    setByName('evo_svd_data', getValueById('svd_data'));
+    setByName('evo_tot_local', getValueByName('tot_local'));
+    setByName('evo_tot_data', getValueById('tot_data'));
     
     // Recalcular dias após copiar
     setTimeout(function() {
       if (typeof calcularDiasATB === 'function') calcularDiasATB();
       if (typeof calcularDiasInvasivosEvo === 'function') calcularDiasInvasivosEvo();
-    }, 100);
+    }, 200);
 
     try { evoCalcularTFGeClCr && evoCalcularTFGeClCr(); } catch(e) {}
     try { evoUpdateBigHeader && evoUpdateBigHeader(); } catch(e) {}

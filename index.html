@@ -1120,30 +1120,55 @@ let isAdmin = false;
 <label style="min-width: 260px;">CVC (local):
       <input name="cvc_local" type="text"/>
 </label>
-<label style="min-width: 140px;">Dia:
-      <input name="cvc_dia" placeholder="ex: D2 / 12/01" type="text"/>
+<label style="min-width: 180px;">Data inserção:
+      <input id="cvc_data" name="cvc_data" onchange="calcularDiasInvasivos()" placeholder="DD/MM/AAAA" type="text"/>
 </label>
+<label style="min-width: 100px;">Dias:
+      <input id="cvc_dias" name="cvc_dias" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+</div>
+<div class="row nowrap">
 <label style="min-width: 260px;">Cateter arterial (local):
       <input name="art_local" type="text"/>
 </label>
-<label style="min-width: 140px;">Dia:
-      <input name="art_dia" placeholder="ex: D1 / 12/01" type="text"/>
+<label style="min-width: 180px;">Data inserção:
+      <input id="art_data" name="art_data" onchange="calcularDiasInvasivos()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 100px;">Dias:
+      <input id="art_dias" name="art_dias" readonly="" style="background: #f0f0f0;" type="text"/>
 </label>
 </div>
 <div class="row nowrap">
 <label style="min-width: 260px;">Cateter de HD (local):
       <input name="hd_local" type="text"/>
 </label>
-<label style="min-width: 140px;">Dia:
-      <input name="hd_dia" placeholder="ex: D1 / 12/01" type="text"/>
+<label style="min-width: 180px;">Data inserção:
+      <input id="hd_data" name="hd_data" onchange="calcularDiasInvasivos()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 100px;">Dias:
+      <input id="hd_dias" name="hd_dias" readonly="" style="background: #f0f0f0;" type="text"/>
 </label>
 </div>
 <div class="row nowrap">
-<label style="min-width: 220px;">SVD (dia):
-      <input name="svd_dia" placeholder="ex: D3 / 12/01" type="text"/>
+<label style="min-width: 220px;">SVD:
+      <input name="svd_local" placeholder="descrever se necessário" type="text"/>
 </label>
-<label style="min-width: 220px;">TOT/TQT (dia):
-      <input name="tot_tqt_dia" placeholder="ex: D5 / 12/01" type="text"/>
+<label style="min-width: 180px;">Data inserção:
+      <input id="svd_data" name="svd_data" onchange="calcularDiasInvasivos()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 100px;">Dias:
+      <input id="svd_dias" name="svd_dias" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+</div>
+<div class="row nowrap">
+<label style="min-width: 220px;">TOT/TQT:
+      <input name="tot_local" placeholder="descrever se necessário" type="text"/>
+</label>
+<label style="min-width: 180px;">Data inserção:
+      <input id="tot_data" name="tot_data" onchange="calcularDiasInvasivos()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 100px;">Dias:
+      <input id="tot_dias" name="tot_dias" readonly="" style="background: #f0f0f0;" type="text"/>
 </label>
 </div>
 <div class="row">
@@ -1672,10 +1697,13 @@ let isAdmin = false;
 <label style="flex: 1;">Antimicrobiano 1:
         <input name="evo_inf_atb1" type="text"/>
 </label>
-<label style="min-width: 150px;">D:
-        <input name="evo_inf_dia_atb1" type="text"/>
+<label style="min-width: 180px;">Data início:
+        <input id="evo_inf_data_atb1" name="evo_inf_data_atb1" onchange="calcularDiasATB()" placeholder="DD/MM/AAAA" type="text"/>
 </label>
-<label style="min-width: 190px;">de:
+<label style="min-width: 100px;">Dia:
+        <input id="evo_inf_dia_atb1" name="evo_inf_dia_atb1" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+<label style="min-width: 120px;">de:
         <input name="evo_inf_total_atb1" type="text"/>
 </label>
 </div>
@@ -1683,10 +1711,13 @@ let isAdmin = false;
 <label style="flex: 1;">Antimicrobiano 2:
         <input name="evo_inf_atb2" type="text"/>
 </label>
-<label style="min-width: 150px;">D:
-        <input name="evo_inf_dia_atb2" type="text"/>
+<label style="min-width: 180px;">Data início:
+        <input id="evo_inf_data_atb2" name="evo_inf_data_atb2" onchange="calcularDiasATB()" placeholder="DD/MM/AAAA" type="text"/>
 </label>
-<label style="min-width: 190px;">de:
+<label style="min-width: 100px;">Dia:
+        <input id="evo_inf_dia_atb2" name="evo_inf_dia_atb2" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+<label style="min-width: 120px;">de:
         <input name="evo_inf_total_atb2" type="text"/>
 </label>
 </div>
@@ -1694,10 +1725,13 @@ let isAdmin = false;
 <label style="flex: 1;">Antimicrobiano 3:
         <input name="evo_inf_atb3" type="text"/>
 </label>
-<label style="min-width: 150px;">D:
-        <input name="evo_inf_dia_atb3" type="text"/>
+<label style="min-width: 180px;">Data início:
+        <input id="evo_inf_data_atb3" name="evo_inf_data_atb3" onchange="calcularDiasATB()" placeholder="DD/MM/AAAA" type="text"/>
 </label>
-<label style="min-width: 190px;">de:
+<label style="min-width: 100px;">Dia:
+        <input id="evo_inf_dia_atb3" name="evo_inf_dia_atb3" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+<label style="min-width: 120px;">de:
         <input name="evo_inf_total_atb3" type="text"/>
 </label>
 </div>
@@ -1921,31 +1955,58 @@ let isAdmin = false;
 <div class="section">
 <h3>Invasivos / Dispositivos</h3>
 <div class="row nowrap">
-<label style="min-width: 260px;">CVC (local):
+<label style="min-width: 240px;">CVC (local):
         <input name="evo_cvc_local" type="text"/>
 </label>
-<label style="min-width: 140px;">Dia:
-        <input name="evo_cvc_dia" type="text"/>
+<label style="min-width: 170px;">Data:
+        <input id="evo_cvc_data" name="evo_cvc_data" onchange="calcularDiasInvasivosEvo()" placeholder="DD/MM/AAAA" type="text"/>
 </label>
-<label style="min-width: 260px;">Cateter arterial (local):
-        <input name="evo_art_local" type="text"/>
-</label>
-<label style="min-width: 140px;">Dia:
-        <input name="evo_art_dia" type="text"/>
+<label style="min-width: 90px;">Dias:
+        <input id="evo_cvc_dias" name="evo_cvc_dias" readonly="" style="background: #f0f0f0;" type="text"/>
 </label>
 </div>
 <div class="row nowrap">
-<label style="min-width: 260px;">Cateter de HD (local):
+<label style="min-width: 240px;">Cateter arterial (local):
+        <input name="evo_art_local" type="text"/>
+</label>
+<label style="min-width: 170px;">Data:
+        <input id="evo_art_data" name="evo_art_data" onchange="calcularDiasInvasivosEvo()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 90px;">Dias:
+        <input id="evo_art_dias" name="evo_art_dias" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+</div>
+<div class="row nowrap">
+<label style="min-width: 240px;">Cateter de HD (local):
         <input name="evo_hd_local" type="text"/>
 </label>
-<label style="min-width: 140px;">Dia:
-        <input name="evo_hd_dia" type="text"/>
+<label style="min-width: 170px;">Data:
+        <input id="evo_hd_data" name="evo_hd_data" onchange="calcularDiasInvasivosEvo()" placeholder="DD/MM/AAAA" type="text"/>
 </label>
-<label style="min-width: 180px;">SVD (dia):
-        <input name="evo_svd_dia" type="text"/>
+<label style="min-width: 90px;">Dias:
+        <input id="evo_hd_dias" name="evo_hd_dias" readonly="" style="background: #f0f0f0;" type="text"/>
 </label>
-<label style="min-width: 180px;">TOT/TQT (dia):
-        <input name="evo_tot_tqt_dia" type="text"/>
+</div>
+<div class="row nowrap">
+<label style="min-width: 240px;">SVD:
+        <input name="evo_svd_local" placeholder="descrever se necessário" type="text"/>
+</label>
+<label style="min-width: 170px;">Data:
+        <input id="evo_svd_data" name="evo_svd_data" onchange="calcularDiasInvasivosEvo()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 90px;">Dias:
+        <input id="evo_svd_dias" name="evo_svd_dias" readonly="" style="background: #f0f0f0;" type="text"/>
+</label>
+</div>
+<div class="row nowrap">
+<label style="min-width: 240px;">TOT/TQT:
+        <input name="evo_tot_local" placeholder="descrever se necessário" type="text"/>
+</label>
+<label style="min-width: 170px;">Data:
+        <input id="evo_tot_data" name="evo_tot_data" onchange="calcularDiasInvasivosEvo()" placeholder="DD/MM/AAAA" type="text"/>
+</label>
+<label style="min-width: 90px;">Dias:
+        <input id="evo_tot_dias" name="evo_tot_dias" readonly="" style="background: #f0f0f0;" type="text"/>
 </label>
 </div>
 <div class="row">
@@ -3117,16 +3178,17 @@ if (tipo === 'VM') vm.classList.remove('hidden');
         // Problemas atuais
         'evo_problemas',
         // Infecção
-        'evo_inf_foco', 'evo_inf_atb1', 'evo_inf_dia_atb1', 'evo_inf_total_atb1',
-        'evo_inf_atb2', 'evo_inf_dia_atb2', 'evo_inf_total_atb2',
-        'evo_inf_atb3', 'evo_inf_dia_atb3', 'evo_inf_total_atb3',
+        'evo_inf_foco', 'evo_inf_atb1', 'evo_inf_data_atb1', 'evo_inf_dia_atb1', 'evo_inf_total_atb1',
+        'evo_inf_atb2', 'evo_inf_data_atb2', 'evo_inf_dia_atb2', 'evo_inf_total_atb2',
+        'evo_inf_atb3', 'evo_inf_data_atb3', 'evo_inf_dia_atb3', 'evo_inf_total_atb3',
         // Culturas (radio buttons e campos relacionados)
         'evo_culturas', 'evo_cult_pend_data', 'evo_cult_pos_txt',
         // Invasivos/Dispositivos
-        'evo_cvc_local', 'evo_cvc_dia', 
-        'evo_art_local', 'evo_art_dia',
-        'evo_hd_local', 'evo_hd_dia', 
-        'evo_svd_dia', 'evo_tot_tqt_dia',
+        'evo_cvc_local', 'evo_cvc_data', 'evo_cvc_dias',
+        'evo_art_local', 'evo_art_data', 'evo_art_dias',
+        'evo_hd_local', 'evo_hd_data', 'evo_hd_dias',
+        'evo_svd_local', 'evo_svd_data', 'evo_svd_dias',
+        'evo_tot_local', 'evo_tot_data', 'evo_tot_dias',
         'evo_swanganz_local', 'evo_swanganz_dia', 
         'evo_bia', 'evo_bia_dia',
         'evo_mp_transv', 'evo_mp_transv_dia', 
@@ -3197,6 +3259,12 @@ if (tipo === 'VM') vm.classList.remove('hidden');
       
       // Reaplica os toggles condicionais para mostrar/esconder campos
       if (typeof evoToggleCulturas === 'function') evoToggleCulturas();
+      
+      // Recalcular dias de ATB e invasivos após copiar
+      setTimeout(function() {
+        if (typeof calcularDiasATB === 'function') calcularDiasATB();
+        if (typeof calcularDiasInvasivosEvo === 'function') calcularDiasInvasivosEvo();
+      }, 100);
       
     } catch(e) {
       console.error('Erro ao copiar evolução anterior:', e);
@@ -7210,6 +7278,116 @@ function applyDrugCalc() {
   
   closeDrugCalc();
 }
+
+// ===== CÁLCULO AUTOMÁTICO DE DIAS (ATB e Invasivos) =====
+
+function parseDataBR(dataStr) {
+  // Aceita DD/MM/AAAA ou DD/MM/AA
+  if (!dataStr) return null;
+  var partes = dataStr.trim().split('/');
+  if (partes.length !== 3) return null;
+  
+  var dia = parseInt(partes[0]);
+  var mes = parseInt(partes[1]) - 1; // JavaScript usa 0-11 para meses
+  var ano = parseInt(partes[2]);
+  
+  // Se ano tem 2 dígitos, converte para 4
+  if (ano < 100) {
+    ano += 2000;
+  }
+  
+  if (isNaN(dia) || isNaN(mes) || isNaN(ano)) return null;
+  
+  return new Date(ano, mes, dia);
+}
+
+function calcularDiferençaDias(dataInicio, dataFim) {
+  if (!dataInicio || !dataFim) return null;
+  
+  // Zera as horas para calcular diferença apenas de dias
+  var d1 = new Date(dataInicio.getFullYear(), dataInicio.getMonth(), dataInicio.getDate());
+  var d2 = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate());
+  
+  var diff = d2 - d1;
+  var dias = Math.floor(diff / (1000 * 60 * 60 * 24)) + 1; // +1 porque conta o dia inicial
+  
+  return dias > 0 ? dias : null;
+}
+
+function calcularDiasATB() {
+  var hoje = new Date();
+  
+  // Calcular para cada ATB
+  for (var i = 1; i <= 3; i++) {
+    var dataInput = document.getElementById('evo_inf_data_atb' + i);
+    var diaOutput = document.getElementById('evo_inf_dia_atb' + i);
+    
+    if (!dataInput || !diaOutput) continue;
+    
+    var dataInicio = parseDataBR(dataInput.value);
+    if (dataInicio) {
+      var dias = calcularDiferençaDias(dataInicio, hoje);
+      diaOutput.value = dias ? 'D' + dias : '';
+    } else {
+      diaOutput.value = '';
+    }
+  }
+}
+
+function calcularDiasInvasivos() {
+  var hoje = new Date();
+  var dispositivos = ['cvc', 'art', 'hd', 'svd', 'tot'];
+  
+  dispositivos.forEach(function(disp) {
+    var dataInput = document.getElementById(disp + '_data');
+    var diaOutput = document.getElementById(disp + '_dias');
+    
+    if (!dataInput || !diaOutput) return;
+    
+    var dataInicio = parseDataBR(dataInput.value);
+    if (dataInicio) {
+      var dias = calcularDiferençaDias(dataInicio, hoje);
+      diaOutput.value = dias ? 'D' + dias : '';
+    } else {
+      diaOutput.value = '';
+    }
+  });
+}
+
+function calcularDiasInvasivosEvo() {
+  var hoje = new Date();
+  var dispositivos = ['cvc', 'art', 'hd', 'svd', 'tot'];
+  
+  dispositivos.forEach(function(disp) {
+    var dataInput = document.getElementById('evo_' + disp + '_data');
+    var diaOutput = document.getElementById('evo_' + disp + '_dias');
+    
+    if (!dataInput || !diaOutput) return;
+    
+    var dataInicio = parseDataBR(dataInput.value);
+    if (dataInicio) {
+      var dias = calcularDiferençaDias(dataInicio, hoje);
+      diaOutput.value = dias ? 'D' + dias : '';
+    } else {
+      diaOutput.value = '';
+    }
+  });
+}
+
+// Atualizar automaticamente os dias quando a página carrega
+document.addEventListener('DOMContentLoaded', function() {
+  // Calcular dias imediatamente
+  if (typeof calcularDiasATB === 'function') calcularDiasATB();
+  if (typeof calcularDiasInvasivos === 'function') calcularDiasInvasivos();
+  if (typeof calcularDiasInvasivosEvo === 'function') calcularDiasInvasivosEvo();
+  
+  // Recalcular a cada minuto (para atualizar quando vira o dia)
+  setInterval(function() {
+    if (typeof calcularDiasATB === 'function') calcularDiasATB();
+    if (typeof calcularDiasInvasivos === 'function') calcularDiasInvasivos();
+    if (typeof calcularDiasInvasivosEvo === 'function') calcularDiasInvasivosEvo();
+  }, 60000); // 60000ms = 1 minuto
+});
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {

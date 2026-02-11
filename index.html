@@ -3968,7 +3968,8 @@ function evoGerarTexto() {
       var a = evoVal('evo_inf_atb'+i);
       var d = evoVal('evo_inf_dia_atb'+i);
       var t = evoVal('evo_inf_total_atb'+i);
-      if (a) atbs.push(a + ((d||t) ? (' (D'+(d||'')+' de '+(t||'')+')') : ''));
+      // d já vem com "D0", "D1" etc, não precisa adicionar D novamente
+      if (a) atbs.push(a + ((d||t) ? (' ('+(d||'')+' de '+(t||'')+')') : ''));
     }
     var cult = evoVal('evo_culturas');
     var cultPos = evoVal('evo_cult_pos_txt');
@@ -4037,11 +4038,11 @@ function evoGerarTexto() {
     // Invasivos
     var inv = [];
     function addI(lbl, txt){ if (txt) inv.push(lbl+': '+txt); }
-    addI('CVC', [evoVal('evo_cvc_local'), evoVal('evo_cvc_dia') && ('dia '+evoVal('evo_cvc_dia'))].filter(Boolean).join(' | '));
-    addI('Cateter arterial', [evoVal('evo_art_local'), evoVal('evo_art_dia') && ('dia '+evoVal('evo_art_dia'))].filter(Boolean).join(' | '));
-    addI('Cateter HD', [evoVal('evo_hd_local'), evoVal('evo_hd_dia') && ('dia '+evoVal('evo_hd_dia'))].filter(Boolean).join(' | '));
-    if (evoVal('evo_svd_dia')) addI('SVD', 'dia '+evoVal('evo_svd_dia'));
-    if (evoVal('evo_tot_tqt_dia')) addI('TOT/TQT', 'dia '+evoVal('evo_tot_tqt_dia'));
+    addI('CVC', [evoVal('evo_cvc_local'), evoVal('evo_cvc_dias')].filter(Boolean).join(' | '));
+    addI('Cateter arterial', [evoVal('evo_art_local'), evoVal('evo_art_dias')].filter(Boolean).join(' | '));
+    addI('Cateter HD', [evoVal('evo_hd_local'), evoVal('evo_hd_dias')].filter(Boolean).join(' | '));
+    if (evoVal('evo_svd_local') || evoVal('evo_svd_dias')) addI('SVD', [evoVal('evo_svd_local'), evoVal('evo_svd_dias')].filter(Boolean).join(' | '));
+    if (evoVal('evo_tot_local') || evoVal('evo_tot_dias')) addI('TOT/TQT', [evoVal('evo_tot_local'), evoVal('evo_tot_dias')].filter(Boolean).join(' | '));
     if (evoVal('evo_drenos_outros')) addI('Drenos/outros', evoVal('evo_drenos_outros'));
     var ret = evoVal('evo_retirados'); if (ret) inv.push('Retirados: '+ret);
     if (inv.length) { linhas.push('Invasivos/Dispositivos:'); for (var ii=0; ii<inv.length; ii++) linhas.push('- '+inv[ii]); linhas.push(''); }
@@ -4579,7 +4580,7 @@ function evoGerarTexto() {
     setByName('evo_comorbidades', getValueByName('hpp'));
     setByName('evo_alergias', getValueByName('alergias'));
     setByName('evo_cirurgias', getValueByName('cirurgias'));
-    setByName('evo_meds', getValueByName('med_dom'));
+    setByName('evo_meds', getValueByName('medicacoes_atuais')); // Copiar medicações atuais
     setByName('evo_medicacoes_atuais', getValueByName('medicacoes_atuais'));
     
     // Infecção - ATB (usar IDs para garantir)

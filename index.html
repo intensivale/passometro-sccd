@@ -1304,8 +1304,14 @@ let isAdmin = false;
 <h3>HPP (História Patológica Pregressa)</h3>
 <div class="row">
 <label style="flex: 1; min-width: 100%;">Comorbidades relevantes:
-        <textarea name="evo_comorbidades" rows="3"></textarea>
+        </textarea>
 </label>
+</div>
+<div class="row">
+<label style="flex: 1; min-width: 100%;">Medicações de uso domiciliar:
+        <textarea name="evo_med_domiciliar" rows="3"></textarea>
+</label>
+</div>
 </div>
 <div class="row">
 <label style="flex: 1; min-width: 100%;">Cirurgias prévias:
@@ -2263,12 +2269,7 @@ let isAdmin = false;
 </div>
 </div>
 </div>
-<div class="section">
-<h3>Medicações em uso</h3>
-<div class="row">
-<textarea name="evo_meds" style="width:100%; height:130px;"></textarea>
-</div>
-</div>
+
 <!-- Impressão / Plano -->
 <div class="section">
 <h3>Impressão clínica</h3>
@@ -3286,10 +3287,9 @@ if (tipo === 'VM') vm.classList.remove('hidden');
       // CAMPOS QUE SÓ DEVEM SER COPIADOS SE JÁ NÃO FORAM PREENCHIDOS PELA ADMISSÃO
       // (copia da evolução anterior apenas se estiverem vazios)
       var camposDaAdmissao = [
-        'evo_comorbidades', // HPP
+        'evo_comorbidades', 'evo_med_domiciliar', // HPP
         'evo_cirurgias',    // Cirurgias prévias
-        'evo_meds',         // Medicações em uso
-        'evo_alergias',     // Alergias
+                'evo_alergias',     // Alergias
         'evo_medicacoes_atuais' // Medicações atuais
       ];
       
@@ -3752,8 +3752,6 @@ function evoCopiarMedAtual(){
     }
 
     var area = byId('evolucaoArea');
-    var el = area.querySelector('[name="evo_meds"]');
-    if (el && data.evo_meds) el.value = data.evo_meds;
   }catch(e){
     alert('Erro ao copiar medicações: ' + e.message);
   }
@@ -4309,13 +4307,6 @@ function evoGerarTexto() {
         if (alergiasVal) { linhas.push('Alergias: ' + alergiasVal); linhas.push(''); }
     }
     
-    // Medicações em uso
-    var meds = evoVal('evo_meds');
-    if (meds) {
-        linhas.push('Medicações em uso: ' + meds);
-        linhas.push('');
-    }
-
     var imp = evoVal('evo_impressao'); if (imp) { linhas.push('Impressão clínica:'); linhas.push(imp); linhas.push(''); }
     var pl = evoVal('evo_plano_24h'); if (pl) { linhas.push('Plano/metas 24h:'); linhas.push(pl); linhas.push(''); }
 
@@ -4557,7 +4548,7 @@ function evoGerarTexto() {
       // Identificação (readonly e copiados da admissão)
       'evo_nome', 'evo_idade', 'evo_sexo', 'evo_peso', 'evo_altura', 'evo_imc', 'evo_pbw',
       // HPP / Comorbidades / Alergias / Cirurgias
-      'evo_comorbidades', 'evo_baseline', 'evo_alergias', 'evo_cirurgias',
+      'evo_comorbidades', 'evo_med_domiciliar', 'evo_baseline', 'evo_alergias', 'evo_cirurgias',
       // Diagnóstico e Motivo (geralmente não mudam)
       'evo_dx_principal', 'evo_motivo_uti',
       // Problemas ativos (podem ser editados, mas geralmente se mantêm)
@@ -4779,10 +4770,9 @@ function evoGerarTexto() {
     setByName('evo_pbw', pbwVal);
 
     // HPP / Alergias / Cirurgias / Medicações
-    setByName('evo_comorbidades', getValueByName('hpp'));
+    setByName('evo_comorbidades', 'evo_med_domiciliar', getValueByName('hpp'));
     setByName('evo_alergias', getValueByName('alergias'));
     setByName('evo_cirurgias', getValueByName('cirurgias'));
-    setByName('evo_meds', getValueByName('medicacoes_atuais')); // Copiar medicações atuais
     setByName('evo_medicacoes_atuais', getValueByName('medicacoes_atuais'));
     
     // Infecção - ATB (usar IDs para garantir)
@@ -6720,12 +6710,127 @@ function verDetalhesAlta(idAlta) {
             }
             
             if (alta.dados) {
-                texto += '--- Dados do Paciente (complementares) ---\n';
-                if (alta.dados.idade) texto += 'Idade: ' + alta.dados.idade + '\n';
-                if (alta.dados.sexo) texto += 'Sexo: ' + alta.dados.sexo + '\n';
-                if (alta.dados.hma) texto += '\nHMA:\n' + alta.dados.hma + '\n';
-                if (alta.dados.hpp) texto += '\nHPP:\n' + alta.dados.hpp + '\n';
-                if (alta.dados.evo_impressao) texto += '\nÚltima Impressão Clínica:\n' + alta.dados.evo_impressao + '\n';
+                texto += '--- Dados do Paciente (complementares) ---
+';
+                if (alta.dados.idade) texto += 'Idade: ' + alta.dados.idade + '
+';
+                if (alta.dados.sexo) texto += 'Sexo: ' + alta.dados.sexo + '
+';
+                if (alta.dados.peso) texto += 'Peso: ' + alta.dados.peso + ' kg
+';
+                if (alta.dados.altura) texto += 'Altura: ' + alta.dados.altura + ' cm
+';
+                
+                if (alta.dados.hma) texto += '
+HMA:
+' + alta.dados.hma + '
+';
+                if (alta.dados.hpp) texto += '
+HPP:
+' + alta.dados.hpp + '
+';
+                if (alta.dados.cirurgias) texto += '
+Cirurgias prévias:
+' + alta.dados.cirurgias + '
+';
+                if (alta.dados.med_dom) texto += '
+Medicações domiciliares:
+' + alta.dados.med_dom + '
+';
+                if (alta.dados.alergias) texto += '
+Alergias: ' + alta.dados.alergias + '
+';
+                
+                // Dados da última evolução
+                if (alta.dados.evo_motivo_uti) texto += '
+Motivo de internação na UTI:
+' + alta.dados.evo_motivo_uti + '
+';
+                if (alta.dados.evo_problemas) texto += '
+Problemas ativos:
+' + alta.dados.evo_problemas + '
+';
+                
+                // Infecção
+                if (alta.dados.evo_inf_foco) texto += '
+Foco infeccioso: ' + alta.dados.evo_inf_foco + '
+';
+                var atbs = [];
+                if (alta.dados.evo_inf_atb1) {
+                    var atbTxt = alta.dados.evo_inf_atb1;
+                    if (alta.dados.evo_inf_dia_atb1 || alta.dados.evo_inf_total_atb1) {
+                        atbTxt += ' (' + (alta.dados.evo_inf_dia_atb1 || '') + ' de ' + (alta.dados.evo_inf_total_atb1 || '') + ')';
+                    }
+                    atbs.push(atbTxt);
+                }
+                if (alta.dados.evo_inf_atb2) {
+                    var atbTxt = alta.dados.evo_inf_atb2;
+                    if (alta.dados.evo_inf_dia_atb2 || alta.dados.evo_inf_total_atb2) {
+                        atbTxt += ' (' + (alta.dados.evo_inf_dia_atb2 || '') + ' de ' + (alta.dados.evo_inf_total_atb2 || '') + ')';
+                    }
+                    atbs.push(atbTxt);
+                }
+                if (alta.dados.evo_inf_atb3) {
+                    var atbTxt = alta.dados.evo_inf_atb3;
+                    if (alta.dados.evo_inf_dia_atb3 || alta.dados.evo_inf_total_atb3) {
+                        atbTxt += ' (' + (alta.dados.evo_inf_dia_atb3 || '') + ' de ' + (alta.dados.evo_inf_total_atb3 || '') + ')';
+                    }
+                    atbs.push(atbTxt);
+                }
+                if (atbs.length > 0) {
+                    texto += 'Antibióticos: ' + atbs.join(', ') + '
+';
+                }
+                
+                // Dispositivos invasivos
+                var dispositivos = [];
+                if (alta.dados.evo_cvc_local || alta.dados.evo_cvc_dias) {
+                    var disp = 'CVC';
+                    if (alta.dados.evo_cvc_local) disp += ' (' + alta.dados.evo_cvc_local;
+                    if (alta.dados.evo_cvc_dias) disp += (alta.dados.evo_cvc_local ? ' - ' : ' (') + alta.dados.evo_cvc_dias;
+                    if (alta.dados.evo_cvc_local || alta.dados.evo_cvc_dias) disp += ')';
+                    dispositivos.push(disp);
+                }
+                if (alta.dados.evo_art_local || alta.dados.evo_art_dias) {
+                    var disp = 'PAI';
+                    if (alta.dados.evo_art_local) disp += ' (' + alta.dados.evo_art_local;
+                    if (alta.dados.evo_art_dias) disp += (alta.dados.evo_art_local ? ' - ' : ' (') + alta.dados.evo_art_dias;
+                    if (alta.dados.evo_art_local || alta.dados.evo_art_dias) disp += ')';
+                    dispositivos.push(disp);
+                }
+                if (alta.dados.evo_svd_dias) {
+                    var tipo = alta.dados.evo_svd_tipo || 'SVD';
+                    dispositivos.push(tipo + ' (' + alta.dados.evo_svd_dias + ')');
+                }
+                if (alta.dados.evo_tot_dias) {
+                    var tipo = alta.dados.evo_tot_tipo || 'TOT';
+                    dispositivos.push(tipo + ' (' + alta.dados.evo_tot_dias + ')');
+                }
+                if (dispositivos.length > 0) {
+                    texto += '
+Dispositivos invasivos: ' + dispositivos.join(', ') + '
+';
+                }
+                
+                // Medicações atuais na alta
+                if (alta.dados.evo_medicacoes_atuais) {
+                    texto += '
+Medicações em uso na alta:
+' + alta.dados.evo_medicacoes_atuais + '
+';
+                }
+                
+                // Impressão final
+                if (alta.dados.evo_impressao) texto += '
+Última Impressão Clínica:
+' + alta.dados.evo_impressao + '
+';
+                
+                // Plano/Orientações de alta
+                if (alta.dados.evo_plano) texto += '
+Plano/Orientações:
+' + alta.dados.evo_plano + '
+';
             }
             
             var modalDetalhes = document.getElementById('modalDetalhesAlta');
@@ -7039,7 +7144,7 @@ function evoNovaEvolucao() {
     var manterCampos = [
         'nome', 'idade', 'sexo', 'peso', 'altura', 'imc', 'pbw', 'datahora_admissao',
         'evo_nome', 'evo_idade', 'evo_sexo', 'evo_peso', 'evo_altura', 'evo_imc', 'evo_pbw',
-        'evo_comorbidades', 'evo_baseline', 'evo_alergias', 'evo_cirurgias',
+        'evo_comorbidades', 'evo_med_domiciliar', 'evo_baseline', 'evo_alergias', 'evo_cirurgias',
         'evo_dx_principal', 'evo_motivo_uti', 'evo_problemas',
         'hma', 'hpp', 'alergias'
     ];

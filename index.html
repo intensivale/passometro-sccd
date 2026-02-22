@@ -3009,7 +3009,7 @@ if (tipo === 'VM') vm.classList.remove('hidden');
       var d = val('inf_dia_atb'+i);
       var t = val('inf_total_atb'+i);
       if (a) {
-        var extra = (d || t) ? (' (D' + (d||'') + ' de ' + (t||'') + ')') : '';
+        var extra = (d || t) ? (' (' + (d||'') + ' de ' + (t||'') + ')') : '';
         atbs.push(a + extra);
       }
     }
@@ -3097,14 +3097,68 @@ if (tipo === 'VM') vm.classList.remove('hidden');
     var inv = [];
     function addInv(lbl, txt){ if (txt) inv.push(lbl + ': ' + txt); }
 
-    var cvcLoc = val('cvc_local'), cvcDia = val('cvc_dia');
-    if (cvcLoc || cvcDia) addInv('CVC', [cvcLoc, cvcDia ? ('dia '+cvcDia) : ''].join(' | ').replace(/\s\|\s$/,''));
-    var artLoc = val('art_local'), artDia = val('art_dia');
-    if (artLoc || artDia) addInv('Cateter arterial', [artLoc, artDia ? ('dia '+artDia) : ''].join(' | ').replace(/\s\|\s$/,''));
-    var hdLoc = val('hd_local'), hdDia = val('hd_dia');
-    if (hdLoc || hdDia) addInv('Cateter de HD', [hdLoc, hdDia ? ('dia '+hdDia) : ''].join(' | ').replace(/\s\|\s$/,''));
-    var svd = val('svd_dia'); if (svd) addInv('SVD', 'dia ' + svd);
-    var tot = val('tot_tqt_dia'); if (tot) addInv('TOT/TQT', 'dia ' + tot);
+    // CVC
+    var cvcLoc = val('cvc_local');
+    var cvcData = document.getElementById('cvc_data') ? document.getElementById('cvc_data').value : '';
+    var cvcDias = val('cvc_dias');
+    if (cvcLoc || cvcData || cvcDias) {
+      var cvcInfo = [];
+      if (cvcLoc) cvcInfo.push(cvcLoc);
+      if (cvcData) cvcInfo.push(formatarData(cvcData));
+      if (cvcDias) cvcInfo.push(cvcDias);
+      addInv('CVC', cvcInfo.join(' | '));
+    }
+    
+    // Cateter Arterial
+    var artLoc = val('art_local');
+    var artData = document.getElementById('art_data') ? document.getElementById('art_data').value : '';
+    var artDias = val('art_dias');
+    if (artLoc || artData || artDias) {
+      var artInfo = [];
+      if (artLoc) artInfo.push(artLoc);
+      if (artData) artInfo.push(formatarData(artData));
+      if (artDias) artInfo.push(artDias);
+      addInv('Cateter arterial', artInfo.join(' | '));
+    }
+    
+    // Cateter de HD
+    var hdLoc = val('hd_local');
+    var hdData = document.getElementById('hd_data') ? document.getElementById('hd_data').value : '';
+    var hdDias = val('hd_dias');
+    if (hdLoc || hdData || hdDias) {
+      var hdInfo = [];
+      if (hdLoc) hdInfo.push(hdLoc);
+      if (hdData) hdInfo.push(formatarData(hdData));
+      if (hdDias) hdInfo.push(hdDias);
+      addInv('Cateter de HD', hdInfo.join(' | '));
+    }
+    
+    // SVD/Cistostomia
+    var svdTipo = document.getElementById('svd_tipo') ? document.getElementById('svd_tipo').value : 'SVD';
+    var svdLoc = val('svd_local');
+    var svdData = document.getElementById('svd_data') ? document.getElementById('svd_data').value : '';
+    var svdDias = val('svd_dias');
+    if (svdLoc || svdData || svdDias) {
+      var svdInfo = [];
+      if (svdLoc) svdInfo.push(svdLoc);
+      if (svdData) svdInfo.push(formatarData(svdData));
+      if (svdDias) svdInfo.push(svdDias);
+      addInv(svdTipo, svdInfo.join(' | '));
+    }
+    
+    // TOT/TQT
+    var totTipo = document.getElementById('tot_tipo') ? document.getElementById('tot_tipo').value : 'TOT';
+    var totLoc = val('tot_local');
+    var totData = document.getElementById('tot_data') ? document.getElementById('tot_data').value : '';
+    var totDias = val('tot_dias');
+    if (totLoc || totData || totDias) {
+      var totInfo = [];
+      if (totLoc) totInfo.push(totLoc);
+      if (totData) totInfo.push(formatarData(totData));
+      if (totDias) totInfo.push(totDias);
+      addInv(totTipo, totInfo.join(' | '));
+    }
+    
     var drenos = val('drenos_outros'); if (drenos) addInv('Drenos/outros', drenos);
 
     if (inv.length) {
@@ -3178,6 +3232,16 @@ if (tipo === 'VM') vm.classList.remove('hidden');
       if (!prev) return; // Primeira evolução, não tem anterior
       
       var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
       var area = byId('evolucaoArea');
       
       // LISTA DE CAMPOS A SEREM COPIADOS DA EVOLUÇÃO ANTERIOR
@@ -3677,6 +3741,16 @@ function evoCopiarMedAtual(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     var el = area.querySelector('[name="evo_meds"]');
     if (el && data.evo_meds) el.value = data.evo_meds;
@@ -3693,6 +3767,16 @@ function evoCopiarMotivoAnterior(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     var campo = area.querySelector('[name="evo_motivo_uti"]');
     if (campo && data.evo_motivo_uti) campo.value = data.evo_motivo_uti;
@@ -3709,6 +3793,16 @@ function evoCopiarProblemasAnteriores(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     var campo = area.querySelector('[name="evo_problemas"]');
     if (campo && data.evo_problemas) campo.value = data.evo_problemas;
@@ -3725,6 +3819,16 @@ function evoCopiarHPPAnterior(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     
     // Copiar comorbidades
@@ -3751,6 +3855,16 @@ function evoCopiarAlergiasAnterior(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     var campo = area.querySelector('[name="evo_alergias"]');
     if (campo && data.evo_alergias) campo.value = data.evo_alergias;
@@ -3767,6 +3881,16 @@ function evoCopiarInfeccaoAnterior(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     
     // Copiar todos os campos de infecção (textos)
@@ -3813,6 +3937,16 @@ function evoCopiarDispositivosAnterior(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     
     // Copiar todos os campos de dispositivos
@@ -3838,6 +3972,16 @@ function evoCopiarImpressaoAnterior(){
       return;
     }
     var data = JSON.parse(prev);
+    // Verificar se é o mesmo paciente (comparar nome)
+    var nomeAtual = document.querySelector('[name="nome"]');
+    var nomeAtualValue = nomeAtual ? nomeAtual.value : '';
+    var nomeEvoAnterior = data.evo_nome || '';
+    
+    if (nomeAtualValue && nomeEvoAnterior && nomeAtualValue !== nomeEvoAnterior) {
+      console.log('Paciente diferente detectado. Não copiando evolução anterior.');
+      return; // Não copiar se for paciente diferente
+    }
+
     var area = byId('evolucaoArea');
     var campo = area.querySelector('[name="evo_impressao"]');
     if (campo && data.evo_impressao) campo.value = data.evo_impressao;
@@ -4037,14 +4181,72 @@ function evoGerarTexto() {
 
     // Invasivos
     var inv = [];
-    function addI(lbl, txt){ if (txt) inv.push(lbl+': '+txt); }
-    addI('CVC', [evoVal('evo_cvc_local'), evoVal('evo_cvc_dias')].filter(Boolean).join(' | '));
-    addI('Cateter arterial', [evoVal('evo_art_local'), evoVal('evo_art_dias')].filter(Boolean).join(' | '));
-    addI('Cateter HD', [evoVal('evo_hd_local'), evoVal('evo_hd_dias')].filter(Boolean).join(' | '));
-    if (evoVal('evo_svd_local') || evoVal('evo_svd_dias')) addI('SVD', [evoVal('evo_svd_local'), evoVal('evo_svd_dias')].filter(Boolean).join(' | '));
-    if (evoVal('evo_tot_local') || evoVal('evo_tot_dias')) addI('TOT/TQT', [evoVal('evo_tot_local'), evoVal('evo_tot_dias')].filter(Boolean).join(' | '));
-    if (evoVal('evo_drenos_outros')) addI('Drenos/outros', evoVal('evo_drenos_outros'));
-    var ret = evoVal('evo_retirados'); if (ret) inv.push('Retirados: '+ret);
+    function addInv(lbl, txt){ if (txt) inv.push(lbl + ': ' + txt); }
+
+    // CVC
+    var cvcLoc = val('cvc_local');
+    var cvcData = document.getElementById('cvc_data') ? document.getElementById('cvc_data').value : '';
+    var cvcDias = val('cvc_dias');
+    if (cvcLoc || cvcData || cvcDias) {
+      var cvcInfo = [];
+      if (cvcLoc) cvcInfo.push(cvcLoc);
+      if (cvcData) cvcInfo.push(formatarData(cvcData));
+      if (cvcDias) cvcInfo.push(cvcDias);
+      addInv('CVC', cvcInfo.join(' | '));
+    }
+    
+    // Cateter Arterial
+    var artLoc = val('art_local');
+    var artData = document.getElementById('art_data') ? document.getElementById('art_data').value : '';
+    var artDias = val('art_dias');
+    if (artLoc || artData || artDias) {
+      var artInfo = [];
+      if (artLoc) artInfo.push(artLoc);
+      if (artData) artInfo.push(formatarData(artData));
+      if (artDias) artInfo.push(artDias);
+      addInv('Cateter arterial', artInfo.join(' | '));
+    }
+    
+    // Cateter de HD
+    var hdLoc = val('hd_local');
+    var hdData = document.getElementById('hd_data') ? document.getElementById('hd_data').value : '';
+    var hdDias = val('hd_dias');
+    if (hdLoc || hdData || hdDias) {
+      var hdInfo = [];
+      if (hdLoc) hdInfo.push(hdLoc);
+      if (hdData) hdInfo.push(formatarData(hdData));
+      if (hdDias) hdInfo.push(hdDias);
+      addInv('Cateter de HD', hdInfo.join(' | '));
+    }
+    
+    // SVD/Cistostomia
+    var svdTipo = document.getElementById('svd_tipo') ? document.getElementById('svd_tipo').value : 'SVD';
+    var svdLoc = val('svd_local');
+    var svdData = document.getElementById('svd_data') ? document.getElementById('svd_data').value : '';
+    var svdDias = val('svd_dias');
+    if (svdLoc || svdData || svdDias) {
+      var svdInfo = [];
+      if (svdLoc) svdInfo.push(svdLoc);
+      if (svdData) svdInfo.push(formatarData(svdData));
+      if (svdDias) svdInfo.push(svdDias);
+      addInv(svdTipo, svdInfo.join(' | '));
+    }
+    
+    // TOT/TQT
+    var totTipo = document.getElementById('tot_tipo') ? document.getElementById('tot_tipo').value : 'TOT';
+    var totLoc = val('tot_local');
+    var totData = document.getElementById('tot_data') ? document.getElementById('tot_data').value : '';
+    var totDias = val('tot_dias');
+    if (totLoc || totData || totDias) {
+      var totInfo = [];
+      if (totLoc) totInfo.push(totLoc);
+      if (totData) totInfo.push(formatarData(totData));
+      if (totDias) totInfo.push(totDias);
+      addInv(totTipo, totInfo.join(' | '));
+    }
+    
+    var drenos = val('drenos_outros'); if (drenos) addInv('Drenos/outros', drenos);
+
     if (inv.length) { linhas.push('Invasivos/Dispositivos:'); for (var ii=0; ii<inv.length; ii++) linhas.push('- '+inv[ii]); linhas.push(''); }
 
     // Nutrição
@@ -7497,6 +7699,169 @@ function toggleDoseWithCalc(checkId, doseId, calcId) {
     }
   }
 }
+
+  // ===== GERAÇÃO DE TEXTO DA EVOLUÇÃO =====
+  function gerarTextoEvolucao() {
+    var linhas = [];
+    
+    function val(name) {
+      var el = document.querySelector('#evolucaoArea [name="'+name+'"]');
+      if (!el) return '';
+      if (el.type === 'checkbox') return el.checked ? 'sim' : '';
+      if (el.type === 'radio') {
+        var checked = document.querySelector('#evolucaoArea [name="'+name+'"]:checked');
+        return checked ? checked.value : '';
+      }
+      return el.value || '';
+    }
+    
+    // Cabeçalho
+    linhas.push('EVOLUÇÃO CTI ADULTO');
+    linhas.push('');
+    
+    // Identificação
+    var nome = val('evo_nome');
+    var idade = val('evo_idade');
+    var sexo = val('evo_sexo');
+    var data = val('evo_data');
+    var diaUti = val('evo_dia_uti');
+    var turno = val('evo_turno');
+    
+    if (nome || idade || sexo) {
+      var idParts = [];
+      if (nome) idParts.push('Nome: ' + nome);
+      if (idade) idParts.push('Idade: ' + idade);
+      if (sexo) idParts.push('Sexo: ' + sexo);
+      if (diaUti) idParts.push('Dia de UTI: ' + diaUti);
+      if (turno) idParts.push('Turno: ' + (turno === 'diurna' ? 'Diurno' : 'Noturno'));
+      linhas.push(idParts.join(' | '));
+      linhas.push('');
+    }
+    
+    // Motivo de internação
+    var motivo = val('evo_motivo_uti');
+    if (motivo) {
+      linhas.push('Motivo de internação na UTI: ' + motivo);
+      linhas.push('');
+    }
+    
+    // Problemas ativos
+    var problemas = val('evo_problemas');
+    if (problemas) {
+      linhas.push('Problemas ativos: ' + problemas);
+      linhas.push('');
+    }
+    
+    // Infecção
+    var foco = val('evo_inf_foco');
+    var atbs = [];
+    for (var i=1; i<=3; i++) {
+      var atb = val('evo_inf_atb'+i);
+      var dia = val('evo_inf_dia_atb'+i);
+      var total = val('evo_inf_total_atb'+i);
+      if (atb) {
+        var extra = (dia || total) ? (' (' + (dia||'') + ' de ' + (total||'') + ')') : '';
+        atbs.push(atb + extra);
+      }
+    }
+    
+    if (foco || atbs.length > 0) {
+      linhas.push('Infecção:');
+      if (foco) linhas.push('- Foco: ' + foco);
+      if (atbs.length > 0) linhas.push('- ATB: ' + atbs.join(' | '));
+      linhas.push('');
+    }
+    
+    // Dispositivos invasivos
+    var invasivos = [];
+    
+    // CVC
+    var cvcLoc = val('evo_cvc_local');
+    var cvcData = document.getElementById('evo_cvc_data') ? document.getElementById('evo_cvc_data').value : '';
+    var cvcDias = val('evo_cvc_dias');
+    if (cvcLoc || cvcData || cvcDias) {
+      var cvcInfo = 'CVC';
+      var cvcDet = [];
+      if (cvcLoc) cvcDet.push(cvcLoc);
+      if (cvcData) cvcDet.push(formatarData(cvcData));
+      if (cvcDias) cvcDet.push(cvcDias);
+      if (cvcDet.length > 0) cvcInfo += ' (' + cvcDet.join(' | ') + ')';
+      invasivos.push(cvcInfo);
+    }
+    
+    // Cateter Arterial
+    var artLoc = val('evo_art_local');
+    var artData = document.getElementById('evo_art_data') ? document.getElementById('evo_art_data').value : '';
+    var artDias = val('evo_art_dias');
+    if (artLoc || artData || artDias) {
+      var artInfo = 'PAI';
+      var artDet = [];
+      if (artLoc) artDet.push(artLoc);
+      if (artData) artDet.push(formatarData(artData));
+      if (artDias) artDet.push(artDias);
+      if (artDet.length > 0) artInfo += ' (' + artDet.join(' | ') + ')';
+      invasivos.push(artInfo);
+    }
+    
+    // Cateter de HD
+    var hdLoc = val('evo_hd_local');
+    var hdData = document.getElementById('evo_hd_data') ? document.getElementById('evo_hd_data').value : '';
+    var hdDias = val('evo_hd_dias');
+    if (hdLoc || hdData || hdDias) {
+      var hdInfo = 'Cateter de HD';
+      var hdDet = [];
+      if (hdLoc) hdDet.push(hdLoc);
+      if (hdData) hdDet.push(formatarData(hdData));
+      if (hdDias) hdDet.push(hdDias);
+      if (hdDet.length > 0) hdInfo += ' (' + hdDet.join(' | ') + ')';
+      invasivos.push(hdInfo);
+    }
+    
+    // SVD/Cistostomia
+    var svdTipo = document.getElementById('evo_svd_tipo') ? document.getElementById('evo_svd_tipo').value : 'SVD';
+    var svdLoc = val('evo_svd_local');
+    var svdData = document.getElementById('evo_svd_data') ? document.getElementById('evo_svd_data').value : '';
+    var svdDias = val('evo_svd_dias');
+    if (svdLoc || svdData || svdDias) {
+      var svdInfo = svdTipo;
+      var svdDet = [];
+      if (svdLoc) svdDet.push(svdLoc);
+      if (svdData) svdDet.push(formatarData(svdData));
+      if (svdDias) svdDet.push(svdDias);
+      if (svdDet.length > 0) svdInfo += ' (' + svdDet.join(' | ') + ')';
+      invasivos.push(svdInfo);
+    }
+    
+    // TOT/TQT
+    var totTipo = document.getElementById('evo_tot_tipo') ? document.getElementById('evo_tot_tipo').value : 'TOT';
+    var totLoc = val('evo_tot_local');
+    var totData = document.getElementById('evo_tot_data') ? document.getElementById('evo_tot_data').value : '';
+    var totDias = val('evo_tot_dias');
+    if (totLoc || totData || totDias) {
+      var totInfo = totTipo;
+      var totDet = [];
+      if (totLoc) totDet.push(totLoc);
+      if (totData) totDet.push(formatarData(totData));
+      if (totDias) totDet.push(totDias);
+      if (totDet.length > 0) totInfo += ' (' + totDet.join(' | ') + ')';
+      invasivos.push(totInfo);
+    }
+    
+    if (invasivos.length > 0) {
+      linhas.push('Dispositivos invasivos: ' + invasivos.join(', '));
+      linhas.push('');
+    }
+    
+    // Impressão clínica
+    var impressao = val('evo_impressao');
+    if (impressao) {
+      linhas.push('Impressão/Conduta: ' + impressao);
+      linhas.push('');
+    }
+    
+    return linhas.join('\n');
+  }
+
 </script>
 
 </body>

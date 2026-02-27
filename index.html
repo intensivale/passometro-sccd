@@ -5666,7 +5666,18 @@ function listarEvolucoes() {
                 var nome = item.nome || 'Sem nome';
                 var turno = item.dados && item.dados.evo_turno ? ' (' + item.dados.evo_turno + ')' : '';
                 
-                div.innerHTML = '<span><strong>' + nome + '</strong> - ' + dataStr + turno + '</span>' +
+                // Informações de autoria
+                var autorInfo = '';
+                if (item.salvoPor) {
+                    var nomeAutor = item.salvoPor.includes('@') ? item.salvoPor.split('@')[0] : item.salvoPor;
+                    autorInfo += '<span style="font-size:11px; color:#555;">✍️ ' + nomeAutor + '</span>';
+                }
+                if (item.editadoPor) {
+                    var nomeEditor = item.editadoPor.includes('@') ? item.editadoPor.split('@')[0] : item.editadoPor;
+                    autorInfo += '<span style="font-size:11px; color:#e65100;"> | ✏️ Editado por ' + nomeEditor + ' (' + (item.editadoEm || '') + ')</span>';
+                }
+                
+                div.innerHTML = '<span><strong>' + nome + '</strong> - ' + dataStr + turno + (autorInfo ? '<br>' + autorInfo : '') + '</span>' +
                     '<div>' +
                     '<button onclick="editarEvolucaoFirebase(\'' + item._id + '\')" style="cursor:pointer; color:#ff9800; border:1px solid #ff9800; background:#fff3e0; padding: 4px 10px; border-radius: 4px; margin-right: 5px;">✏️ Editar</button>' +
                     '<button onclick="carregarEvolucaoFirebase(\'' + item._id + '\')" style="cursor:pointer; color:#1565c0; border:1px solid #1565c0; background:#e3f2fd; padding: 4px 10px; border-radius: 4px; margin-right: 5px;">👁️ Ver</button>' +
@@ -5968,21 +5979,24 @@ function coletarDadosParaResumo() {
     // Dispositivos invasivos
     dados.dispositivos = [];
     var cvcLocal = document.getElementsByName("evo_cvc_local")[0]?.value;
-    var cvcDia = document.getElementsByName("evo_cvc_dia")[0]?.value;
-    if (cvcLocal) dados.dispositivos.push("CVC " + cvcLocal + (cvcDia ? " (D" + cvcDia + ")" : ""));
+    var cvcDias = document.getElementById("evo_cvc_dias")?.value;
+    if (cvcLocal) dados.dispositivos.push("CVC " + cvcLocal + (cvcDias ? " (" + cvcDias + ")" : ""));
     
     var artLocal = document.getElementsByName("evo_art_local")[0]?.value;
-    var artDia = document.getElementsByName("evo_art_dia")[0]?.value;
-    if (artLocal) dados.dispositivos.push("Cateter arterial " + artLocal + (artDia ? " (D" + artDia + ")" : ""));
+    var artDias = document.getElementById("evo_art_dias")?.value;
+    if (artLocal) dados.dispositivos.push("Cateter arterial " + artLocal + (artDias ? " (" + artDias + ")" : ""));
     
     var hdLocal = document.getElementsByName("evo_hd_local")[0]?.value;
-    if (hdLocal) dados.dispositivos.push("Cateter HD " + hdLocal);
+    var hdDias = document.getElementById("evo_hd_dias")?.value;
+    if (hdLocal) dados.dispositivos.push("Cateter HD " + hdLocal + (hdDias ? " (" + hdDias + ")" : ""));
     
-    var svdDia = document.getElementsByName("evo_svd_dia")[0]?.value;
-    if (svdDia) dados.dispositivos.push("SVD (D" + svdDia + ")");
+    var svdLocal = document.getElementsByName("evo_svd_local")[0]?.value;
+    var svdDias = document.getElementById("evo_svd_dias")?.value;
+    if (svdLocal || svdDias) dados.dispositivos.push("SVD" + (svdLocal ? " " + svdLocal : "") + (svdDias ? " (" + svdDias + ")" : ""));
     
-    var totDia = document.getElementsByName("evo_tot_tqt_dia")[0]?.value;
-    if (totDia) dados.dispositivos.push("TOT/TQT (D" + totDia + ")");
+    var totLocal = document.getElementsByName("evo_tot_local")[0]?.value;
+    var totDias = document.getElementById("evo_tot_dias")?.value;
+    if (totLocal || totDias) dados.dispositivos.push("TOT/TQT" + (totLocal ? " " + totLocal : "") + (totDias ? " (" + totDias + ")" : ""));
     
     var drenos = document.getElementsByName("evo_drenos_outros")[0]?.value;
     if (drenos) dados.dispositivos.push("Drenos: " + drenos);
@@ -6503,28 +6517,98 @@ function verDetalhesAlta(idAlta) {
             }
             
             var alta = doc.data();
+            var d = alta.dados || {};
             
             var texto = '=== REGISTRO DE ALTA ===\n\n';
             texto += 'Paciente: ' + (alta.nome || '-') + '\n';
             texto += 'CTI: ' + (alta.cti || '').replace('CTI', 'CTI ') + '\n';
             texto += 'Leito: ' + (alta.leito || '-') + '\n';
             texto += 'Data Admissão: ' + formatarData(alta.dataAdmissao) + '\n';
-            texto += 'Data Alta: ' + (alta.dataAlta || '-') + '\n\n';
+            texto += 'Data Alta: ' + (alta.dataAlta || '-') + '\n';
+            texto += 'Alta registrada por: ' + (alta.altaDadaPor || '-') + '\n\n';
             
             // RESUMO DE ALTA (se existir)
             if (alta.resumoAlta) {
-                texto += '\n' + alta.resumoAlta + '\n\n';
+                texto += alta.resumoAlta + '\n\n';
                 texto += '═══════════════════════════════════════════════════════\n\n';
             }
             
-            if (alta.dados) {
-                texto += '--- Dados do Paciente (complementares) ---\n';
-                if (alta.dados.idade) texto += 'Idade: ' + alta.dados.idade + '\n';
-                if (alta.dados.sexo) texto += 'Sexo: ' + alta.dados.sexo + '\n';
-                if (alta.dados.hma) texto += '\nHMA:\n' + alta.dados.hma + '\n';
-                if (alta.dados.hpp) texto += '\nHPP:\n' + alta.dados.hpp + '\n';
-                if (alta.dados.evo_impressao) texto += '\nÚltima Impressão Clínica:\n' + alta.dados.evo_impressao + '\n';
+            // DADOS CLÍNICOS COMPLETOS
+            texto += '════════════ DADOS CLÍNICOS COMPLETOS ════════════\n\n';
+            
+            // Identificação
+            texto += '─── IDENTIFICAÇÃO ───\n';
+            if (d.idade) texto += 'Idade: ' + d.idade + ' anos\n';
+            if (d.sexo) texto += 'Sexo: ' + (d.sexo === 'M' ? 'Masculino' : 'Feminino') + '\n';
+            if (d.peso) texto += 'Peso: ' + d.peso + ' kg\n';
+            if (d.altura) texto += 'Altura: ' + d.altura + ' cm\n';
+            if (d.imc) texto += 'IMC: ' + d.imc + '\n';
+            if (d.peso_predito) texto += 'Peso Predito (PBW): ' + d.peso_predito + '\n';
+            texto += '\n';
+            
+            // História Clínica
+            if (d.hma) texto += '─── HMA ───\n' + d.hma + '\n\n';
+            if (d.hpp) texto += '─── HPP ───\n' + d.hpp + '\n\n';
+            if (d.cirurgias) texto += '─── CIRURGIAS PRÉVIAS ───\n' + d.cirurgias + '\n\n';
+            if (d.alergias) texto += '─── ALERGIAS ───\n' + d.alergias + '\n\n';
+            if (d.med_dom) texto += '─── MEDICAÇÕES DOMICILIARES ───\n' + d.med_dom + '\n\n';
+            
+            // Dados da Evolução
+            if (d.evo_motivo_uti) texto += '─── MOTIVO UTI ───\n' + d.evo_motivo_uti + '\n\n';
+            if (d.evo_problemas) texto += '─── PROBLEMAS DURANTE INTERNAÇÃO ───\n' + d.evo_problemas + '\n\n';
+            
+            // Infecção/ATB
+            var atbLines = [];
+            if (d.evo_inf_foco) atbLines.push('Foco: ' + d.evo_inf_foco);
+            if (d.evo_inf_atb1) atbLines.push('ATB 1: ' + d.evo_inf_atb1 + (d.evo_inf_dia_atb1 ? ' (' + d.evo_inf_dia_atb1 + ')' : '') + (d.evo_inf_total_atb1 ? ' / ' + d.evo_inf_total_atb1 + ' dias' : ''));
+            if (d.evo_inf_atb2) atbLines.push('ATB 2: ' + d.evo_inf_atb2 + (d.evo_inf_dia_atb2 ? ' (' + d.evo_inf_dia_atb2 + ')' : '') + (d.evo_inf_total_atb2 ? ' / ' + d.evo_inf_total_atb2 + ' dias' : ''));
+            if (d.evo_inf_atb3) atbLines.push('ATB 3: ' + d.evo_inf_atb3 + (d.evo_inf_dia_atb3 ? ' (' + d.evo_inf_dia_atb3 + ')' : '') + (d.evo_inf_total_atb3 ? ' / ' + d.evo_inf_total_atb3 + ' dias' : ''));
+            if (atbLines.length) texto += '─── INFECÇÃO / ATB ───\n' + atbLines.join('\n') + '\n\n';
+            
+            // Culturas
+            if (d.evo_culturas) {
+                texto += '─── CULTURAS ───\n';
+                texto += 'Resultado: ' + d.evo_culturas + '\n';
+                if (d.evo_cult_pos_txt) texto += 'Positivas: ' + d.evo_cult_pos_txt + '\n';
+                if (d.evo_cult_pend_data) texto += 'Pendentes desde: ' + d.evo_cult_pend_data + '\n';
+                texto += '\n';
             }
+            
+            // Dispositivos Invasivos
+            var invLines = [];
+            if (d.evo_cvc_local) invLines.push('CVC: ' + d.evo_cvc_local + (d.evo_cvc_dias ? ' (' + d.evo_cvc_dias + ')' : '') + (d.evo_cvc_data ? ' - desde ' + d.evo_cvc_data : ''));
+            if (d.evo_art_local) invLines.push('Cateter Arterial: ' + d.evo_art_local + (d.evo_art_dias ? ' (' + d.evo_art_dias + ')' : '') + (d.evo_art_data ? ' - desde ' + d.evo_art_data : ''));
+            if (d.evo_hd_local) invLines.push('Cateter HD: ' + d.evo_hd_local + (d.evo_hd_dias ? ' (' + d.evo_hd_dias + ')' : '') + (d.evo_hd_data ? ' - desde ' + d.evo_hd_data : ''));
+            if (d.evo_svd_local || d.evo_svd_dias) invLines.push('SVD: ' + (d.evo_svd_local || '') + (d.evo_svd_dias ? ' (' + d.evo_svd_dias + ')' : '') + (d.evo_svd_data ? ' - desde ' + d.evo_svd_data : ''));
+            if (d.evo_tot_local || d.evo_tot_dias) invLines.push('TOT/TQT: ' + (d.evo_tot_local || '') + (d.evo_tot_dias ? ' (' + d.evo_tot_dias + ')' : '') + (d.evo_tot_data ? ' - desde ' + d.evo_tot_data : ''));
+            if (d.evo_drenos_outros) invLines.push('Drenos/outros: ' + d.evo_drenos_outros);
+            if (invLines.length) texto += '─── DISPOSITIVOS INVASIVOS ───\n' + invLines.join('\n') + '\n\n';
+            
+            // Exames laboratoriais da evolução
+            var labEvo = [];
+            if (d.evo_hb) labEvo.push('Hb: ' + d.evo_hb);
+            if (d.evo_leuco) labEvo.push('Leuco: ' + d.evo_leuco);
+            if (d.evo_plaquetas) labEvo.push('Plaq: ' + d.evo_plaquetas);
+            if (d.evo_creatinina) labEvo.push('Creat: ' + d.evo_creatinina);
+            if (d.evo_ureia) labEvo.push('Ureia: ' + d.evo_ureia);
+            if (d.evo_na) labEvo.push('Na+: ' + d.evo_na);
+            if (d.evo_k) labEvo.push('K+: ' + d.evo_k);
+            if (labEvo.length) texto += '─── LABORATÓRIO (ÚLTIMA EVOLUÇÃO) ───\n' + labEvo.join(' | ') + '\n\n';
+            
+            // Impressão e Plano
+            if (d.evo_impressao) texto += '─── IMPRESSÃO CLÍNICA ───\n' + d.evo_impressao + '\n\n';
+            if (d.evo_plano_24h) texto += '─── PLANO / METAS 24H ───\n' + d.evo_plano_24h + '\n\n';
+            
+            // Exames de Imagem
+            if (d.ecg_admissao || d.rx_torax_admissao || d.pocus_admissao) {
+                texto += '─── EXAMES DE IMAGEM (ADMISSÃO) ───\n';
+                if (d.ecg_admissao) texto += 'ECG: ' + d.ecg_admissao + '\n';
+                if (d.rx_torax_admissao) texto += 'Rx Tórax: ' + d.rx_torax_admissao + '\n';
+                if (d.pocus_admissao) texto += 'POCUS: ' + d.pocus_admissao + '\n';
+                texto += '\n';
+            }
+            
+            texto += '═══════════════════════════════════════════════════════\n';
             
             var modalDetalhes = document.getElementById('modalDetalhesAlta');
             var textareaDetalhes = document.getElementById('textareaDetalhesAlta');
@@ -6928,14 +7012,14 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <!-- MODAL: Detalhes da Alta -->
-<div id="modalDetalhesAlta" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;">
-<div style="background: white; width: 90%; max-width: 700px; max-height: 80%; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+<div id="modalDetalhesAlta" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
+<div style="background: white; width: 100%; max-width: 860px; max-height: 92vh; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
 <div style="background: #1976d2; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-    <h2 style="margin: 0;">📄 Detalhes da Alta</h2>
+    <h2 style="margin: 0;">📄 Prontuário Completo - Alta</h2>
     <button onclick="fecharModalDetalhes()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
 </div>
 <div style="padding: 20px; overflow-y: auto; flex: 1;">
-    <textarea id="textareaDetalhesAlta" style="width: 100%; height: 400px; font-family: monospace; font-size: 13px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;" readonly></textarea>
+    <textarea id="textareaDetalhesAlta" style="width: 100%; height: 600px; font-family: monospace; font-size: 13px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;" readonly></textarea>
 </div>
 <div style="padding: 15px 20px; border-top: 1px solid #ddd; display: flex; justify-content: flex-end; gap: 10px;">
     <button onclick="copiarDetalhesAlta()" style="background: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">📋 Copiar</button>

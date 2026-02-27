@@ -2460,15 +2460,54 @@ let isAdmin = false;
   }
   
   function salvarAdmissao() {
-    // Salva os dados da admissão
-    salvarLeitoAtual();
+    var inputs = document.querySelectorAll("input, textarea, select");
+    var conteudo = {};
     
-    // Colapsa automaticamente após salvar
-    if (!admissaoColapsada) {
-      toggleAdmissao();
-    }
+    inputs.forEach(function(el) {
+        if (el.id === 'seletorCTI' || el.id === 'seletorLeito') return;
+        if (el.id === 'loginEmail' || el.id === 'loginPassword') return;
+        var chave = el.name || el.id;
+        if (!chave) return;
+        if (el.type === 'checkbox' || el.type === 'radio') {
+            if (el.checked) {
+                conteudo[chave + '::' + el.value] = true;
+                if (el.type === 'radio') conteudo[chave] = el.value;
+            }
+        } else {
+            conteudo[chave] = el.value;
+        }
+    });
     
-    alert('✅ Admissão salva com sucesso!');
+    conteudo._ultimaAtualizacao = new Date().toISOString();
+    conteudo._atualizadoPor = currentUser ? currentUser.email : 'desconhecido';
+    conteudo._admissaoSalvaEm = new Date().toISOString();
+    conteudo._admissaoSalvaPor = currentUser ? currentUser.email : 'desconhecido';
+    
+    // Salvar imediatamente no localStorage como backup
+    try {
+        localStorage.setItem('LEITO_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
+    } catch(e) {}
+    
+    atualizarSyncStatus('pending');
+    
+    // Salvar no Firebase e aguardar confirmação
+    db.collection('leitos').doc(getChaveLeitoFirebase()).set(conteudo)
+        .then(function() {
+            atualizarSyncStatus('ok');
+            
+            // Colapsa automaticamente após salvar
+            if (!admissaoColapsada) {
+                toggleAdmissao();
+            }
+            
+            alert('✅ Admissão salva com sucesso!');
+        })
+        .catch(function(error) {
+            console.error('Erro ao salvar admissão:', error);
+            atualizarSyncStatus('error');
+            // Dados já estão no localStorage como backup
+            alert('⚠️ Erro ao salvar no servidor, mas os dados foram salvos localmente.\n\nTente salvar novamente em instantes.');
+        });
   }
 
   // ===== UI: Toggle Transfusões =====
@@ -5244,6 +5283,11 @@ function salvarLeitoAtual() {
     conteudo._ultimaAtualizacao = new Date().toISOString();
     conteudo._atualizadoPor = currentUser ? currentUser.email : 'desconhecido';
     
+    // Salvar imediatamente no localStorage como backup
+    try {
+        localStorage.setItem('LEITO_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
+    } catch(e) {}
+    
     atualizarSyncStatus('pending');
     
     // Salvar no Firebase
@@ -5281,7 +5325,26 @@ function carregarLeito() {
     db.collection('leitos').doc(chave).get()
         .then(function(doc) {
             if (!doc.exists) {
-                // Leito vazio
+                // Verificar se há backup local antes de declarar leito vazio
+                var dadosLocal = localStorage.getItem('LEITO_' + ctiAtual + '_' + leitoAtual);
+                if (dadosLocal) {
+                    try {
+                        var conteudoLocal = JSON.parse(dadosLocal);
+                        // Só usa o backup se tiver nome de paciente (admissão real)
+                        if (conteudoLocal.nome && conteudoLocal.nome.trim()) {
+                            aplicarDadosFormulario(conteudoLocal);
+                            atualizarStatusLeito('Paciente: ' + conteudoLocal.nome + ' (backup local)');
+                            listarEvolucoes();
+                            atualizarDiasInternacao();
+                            // Tentar reenviar para o Firebase silenciosamente
+                            db.collection('leitos').doc(getChaveLeitoFirebase()).set(conteudoLocal)
+                                .then(function() { atualizarSyncStatus('ok'); })
+                                .catch(function() {});
+                            return;
+                        }
+                    } catch(e) {}
+                }
+                // Leito realmente vazio
                 preencherDataHoraAtual();
                 atualizarStatusLeito('Leito vazio');
                 listarEvolucoes();
@@ -5290,6 +5353,11 @@ function carregarLeito() {
             
             var conteudo = doc.data();
             aplicarDadosFormulario(conteudo);
+            
+            // Atualizar backup local com dado mais recente do Firebase
+            try {
+                localStorage.setItem('LEITO_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
+            } catch(e) {}
             
             var nomePaciente = conteudo.nome || 'Sem nome';
             atualizarStatusLeito('Paciente: ' + nomePaciente);

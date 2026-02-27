@@ -1318,9 +1318,8 @@ let isAdmin = false;
 </label>
 </div>
 <div class="row" style="margin-top: 12px;">
-<label style="flex: 1; min-width: 100%;">
-<strong>Medicações atuais:</strong>
-        <textarea name="evo_medicacoes_atuais" rows="5" placeholder="Todas as medicações em uso (vasopressores, sedativos, antibióticos, profilaxias, etc.)"></textarea>
+<label style="flex: 1; min-width: 100%;">Medicações de uso domiciliar:
+        <textarea name="evo_meds" style="width:100%; height:130px;"></textarea>
 </label>
 </div>
 </div>
@@ -2264,9 +2263,9 @@ let isAdmin = false;
 </div>
 </div>
 <div class="section">
-<h3>Medicações de uso domiciliar</h3>
+<h3>Medicações em uso atual</h3>
 <div class="row">
-<textarea name="evo_meds" style="width:100%; height:130px;"></textarea>
+<textarea name="evo_medicacoes_atuais" rows="5" style="width:100%;" placeholder="Todas as medicações em uso (vasopressores, sedativos, antibióticos, profilaxias, etc.)"></textarea>
 </div>
 </div>
 <!-- Impressão / Plano -->
@@ -4107,10 +4106,17 @@ function evoGerarTexto() {
         if (alergiasVal) { linhas.push('Alergias: ' + alergiasVal); linhas.push(''); }
     }
     
-    // Medicações em uso
+    // Medicações de uso domiciliar
     var meds = evoVal('evo_meds');
     if (meds) {
         linhas.push('Medicações domiciliares: ' + meds);
+        linhas.push('');
+    }
+
+    // Medicações em uso atual
+    var medsAtual = evoVal('evo_medicacoes_atuais');
+    if (medsAtual) {
+        linhas.push('Medicações em uso atual: ' + medsAtual);
         linhas.push('');
     }
 

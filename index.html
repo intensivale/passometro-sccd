@@ -3206,112 +3206,109 @@ if (tipo === 'VM') vm.classList.remove('hidden');
   }
 
   function copiarDadosEvolucaoAnterior() {
-    try {
-      // Usa a chave específica do leito
-      var prev = localStorage.getItem('evolucao_last_' + ctiAtual + '_' + leitoAtual);
-      if (!prev) return; // Primeira evolução, não tem anterior
-      
-      var data = JSON.parse(prev);
-      var area = byId('evolucaoArea');
-      
-      // LISTA DE CAMPOS A SEREM COPIADOS DA EVOLUÇÃO ANTERIOR
-      var camposParaCopiar = [
-        // Motivo da internação na UTI
-        'evo_motivo_uti',
-        // Problemas atuais
-        'evo_problemas',
-        // Infecção
-        'evo_inf_foco', 'evo_inf_atb1', 'evo_inf_data_atb1', 'evo_inf_dia_atb1', 'evo_inf_total_atb1',
-        'evo_inf_atb2', 'evo_inf_data_atb2', 'evo_inf_dia_atb2', 'evo_inf_total_atb2',
-        'evo_inf_atb3', 'evo_inf_data_atb3', 'evo_inf_dia_atb3', 'evo_inf_total_atb3',
-        // Culturas (radio buttons e campos relacionados)
-        'evo_culturas', 'evo_cult_pend_data', 'evo_cult_pos_txt',
-        // Invasivos/Dispositivos
-        'evo_cvc_local', 'evo_cvc_data', 'evo_cvc_dias',
-        'evo_art_local', 'evo_art_data', 'evo_art_dias',
-        'evo_hd_local', 'evo_hd_data', 'evo_hd_dias',
-        'evo_svd_local', 'evo_svd_data', 'evo_svd_dias',
-        'evo_tot_local', 'evo_tot_data', 'evo_tot_dias',
-        'evo_swanganz_local', 'evo_swanganz_dia', 
-        'evo_bia', 'evo_bia_dia',
-        'evo_mp_transv', 'evo_mp_transv_dia', 
-        'evo_drenos_outros', 'evo_retirados',
-        // Nutrição - TODOS os campos
-        'evo_vet_kcal', 'evo_vet_prot',
-        'evo_dieta_select', 
-        'evo_dieta_kcal_ml', 'evo_dieta_prot_ml',
-        'evo_dieta_mlh', 'evo_dieta_ml20',
-        'evo_kcal_admin', 'evo_prot_admin',
-        'evo_whey_prot_g',
-        'evo_pct_kcal', 'evo_pct_prot',
-        'evo_vomitos', 'evo_distensao',
-        'evo_estase', 'evo_estase_residuo',
-        'evo_hipo', 'evo_hipo_periodo', 'evo_hipo_glicose',
-        'evo_hiper', 'evo_hiper_periodo', 'evo_hiper_insulina',
-        'evo_profilaxia_ulcera',
-        // Impressão clínica
-        'evo_impressao'
-      ];
-      
-      // CAMPOS QUE SÓ DEVEM SER COPIADOS SE JÁ NÃO FORAM PREENCHIDOS PELA ADMISSÃO
-      // (copia da evolução anterior apenas se estiverem vazios)
-      var camposDaAdmissao = [
-        'evo_comorbidades', // HPP
-        'evo_cirurgias',    // Cirurgias prévias
-        'evo_meds',         // Medicações de uso domiciliar
-        'evo_alergias',     // Alergias
-        'evo_medicacoes_atuais' // Medicações atuais
-      ];
-      
-      // Copiar cada campo
-      camposParaCopiar.forEach(function(nomeCampo){
-        if (typeof data[nomeCampo] === 'undefined') return;
+    // Busca a última evolução do Firebase (fonte confiável, vinculada ao leito atual)
+    var prefixo = ctiAtual + '_' + leitoAtual;
+    
+    db.collection('evolucoes')
+      .where('leitoId', '==', prefixo)
+      .get()
+      .then(function(snapshot) {
+        if (snapshot.empty) return; // Primeira evolução deste paciente neste leito — não copia nada
         
-        var campo = area.querySelector('[name="'+nomeCampo+'"]');
-        if (!campo) return;
+        // Ordenar localmente e pegar a mais recente
+        var evolucoes = [];
+        snapshot.forEach(function(doc) {
+          var item = doc.data();
+          evolucoes.push(item);
+        });
+        evolucoes.sort(function(a, b) {
+          var da = a.timestamp ? a.timestamp.toDate() : new Date(0);
+          var db_ = b.timestamp ? b.timestamp.toDate() : new Date(0);
+          return db_ - da;
+        });
         
-        if (campo.type === 'radio') {
-          // Para radio buttons, marca o que tem o mesmo valor
-          var radios = area.querySelectorAll('[name="'+nomeCampo+'"]');
-          radios.forEach(function(r) {
-            if (r.value === data[nomeCampo]) {
-              r.checked = true;
-              // Dispara o evento onclick se existir
-              if (r.onclick) r.onclick();
-            }
-          });
-        } else if (campo.type === 'checkbox') {
-          campo.checked = !!data[nomeCampo];
-        } else {
+        var data = evolucoes[0].dados;
+        if (!data) return;
+        
+        var area = byId('evolucaoArea');
+        if (!area) return;
+        
+        // LISTA DE CAMPOS A SEREM COPIADOS DA EVOLUÇÃO ANTERIOR
+        var camposParaCopiar = [
+          'evo_motivo_uti',
+          'evo_problemas',
+          'evo_inf_foco', 'evo_inf_atb1', 'evo_inf_data_atb1', 'evo_inf_dia_atb1', 'evo_inf_total_atb1',
+          'evo_inf_atb2', 'evo_inf_data_atb2', 'evo_inf_dia_atb2', 'evo_inf_total_atb2',
+          'evo_inf_atb3', 'evo_inf_data_atb3', 'evo_inf_dia_atb3', 'evo_inf_total_atb3',
+          'evo_culturas', 'evo_cult_pend_data', 'evo_cult_pos_txt',
+          'evo_cvc_local', 'evo_cvc_data', 'evo_cvc_dias',
+          'evo_art_local', 'evo_art_data', 'evo_art_dias',
+          'evo_hd_local', 'evo_hd_data', 'evo_hd_dias',
+          'evo_svd_local', 'evo_svd_data', 'evo_svd_dias',
+          'evo_tot_local', 'evo_tot_data', 'evo_tot_dias',
+          'evo_swanganz_local', 'evo_swanganz_dia',
+          'evo_bia', 'evo_bia_dia',
+          'evo_mp_transv', 'evo_mp_transv_dia',
+          'evo_drenos_outros', 'evo_retirados',
+          'evo_vet_kcal', 'evo_vet_prot',
+          'evo_dieta_select',
+          'evo_dieta_kcal_ml', 'evo_dieta_prot_ml',
+          'evo_dieta_mlh', 'evo_dieta_ml20',
+          'evo_kcal_admin', 'evo_prot_admin',
+          'evo_whey_prot_g',
+          'evo_pct_kcal', 'evo_pct_prot',
+          'evo_vomitos', 'evo_distensao',
+          'evo_estase', 'evo_estase_residuo',
+          'evo_hipo', 'evo_hipo_periodo', 'evo_hipo_glicose',
+          'evo_hiper', 'evo_hiper_periodo', 'evo_hiper_insulina',
+          'evo_profilaxia_ulcera',
+          'evo_impressao'
+        ];
+        
+        var camposDaAdmissao = [
+          'evo_comorbidades',
+          'evo_cirurgias',
+          'evo_meds',
+          'evo_alergias',
+          'evo_medicacoes_atuais'
+        ];
+        
+        camposParaCopiar.forEach(function(nomeCampo) {
+          if (typeof data[nomeCampo] === 'undefined') return;
+          var campo = area.querySelector('[name="' + nomeCampo + '"]');
+          if (!campo) return;
+          if (campo.type === 'radio') {
+            var radios = area.querySelectorAll('[name="' + nomeCampo + '"]');
+            radios.forEach(function(r) {
+              if (r.value === data[nomeCampo]) {
+                r.checked = true;
+                if (r.onclick) r.onclick();
+              }
+            });
+          } else if (campo.type === 'checkbox') {
+            campo.checked = !!data[nomeCampo];
+          } else {
+            campo.value = data[nomeCampo] || '';
+          }
+        });
+        
+        camposDaAdmissao.forEach(function(nomeCampo) {
+          if (typeof data[nomeCampo] === 'undefined') return;
+          var campo = area.querySelector('[name="' + nomeCampo + '"]');
+          if (!campo || campo.value) return; // Não sobrescreve o que veio da admissão
           campo.value = data[nomeCampo] || '';
-        }
-      });
-      
-      // Copiar campos da admissão APENAS se estiverem vazios (não sobrescrever o que veio da admissão)
-      camposDaAdmissao.forEach(function(nomeCampo){
-        if (typeof data[nomeCampo] === 'undefined') return;
+        });
         
-        var campo = area.querySelector('[name="'+nomeCampo+'"]');
-        if (!campo) return;
+        if (typeof evoToggleCulturas === 'function') evoToggleCulturas();
         
-        // Só copia se o campo estiver vazio
-        if (!campo.value) {
-          campo.value = data[nomeCampo] || '';
-        }
+        setTimeout(function() {
+          if (typeof calcularDiasATB === 'function') calcularDiasATB();
+          if (typeof calcularDiasInvasivosEvo === 'function') calcularDiasInvasivosEvo();
+        }, 100);
+      })
+      .catch(function(e) {
+        console.error('Erro ao copiar evolução anterior do Firebase:', e);
       });
-      
-      // Reaplica os toggles condicionais para mostrar/esconder campos
-      if (typeof evoToggleCulturas === 'function') evoToggleCulturas();
-      
-      // Recalcular dias de ATB e invasivos após copiar
-      setTimeout(function() {
-        if (typeof calcularDiasATB === 'function') calcularDiasATB();
-        if (typeof calcularDiasInvasivosEvo === 'function') calcularDiasInvasivosEvo();
-      }, 100);
-      
-    } catch(e) {
-      console.error('Erro ao copiar evolução anterior:', e);
-    }
   }
 
   function evoAtualizarDiaUTI() {
@@ -5886,13 +5883,6 @@ function salvarEvolucao() {
     };
     
     atualizarSyncStatus('pending');
-    
-    // Salvar no localStorage para próxima evolução
-    try {
-        localStorage.setItem('evolucao_last_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
-    } catch(e) {
-        console.error('Erro ao salvar no localStorage:', e);
-    }
     
     // Verifica se está editando ou criando nova evolução
     if (evolucaoEmEdicao) {

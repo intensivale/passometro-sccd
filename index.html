@@ -6434,24 +6434,17 @@ function executarAlta(nomePaciente) {
             return batch.commit();
         })
         .then(function() {
-            // Limpar leito
+            // Limpar leito no Firebase
+            // Mas PRIMEIRO limpar localStorage para evitar que o carregarLeito
+            // restaure o paciente a partir do backup local após a deleção
+            try {
+                localStorage.removeItem('evolucao_last_' + ctiAtual + '_' + leitoAtual);
+                localStorage.removeItem('LEITO_' + ctiAtual + '_' + leitoAtual);
+            } catch(e) {}
+            
             return db.collection('leitos').doc(getChaveLeitoFirebase()).delete();
         })
         .then(function() {
-            // Limpar localStorage das evoluções deste leito
-            try {
-                var chaveEvolucao = 'evolucao_last_' + ctiAtual + '_' + leitoAtual;
-                localStorage.removeItem(chaveEvolucao);
-                
-                // Também limpar localStorage do leito
-                var chaveLeito = 'LEITO_' + ctiAtual + '_' + leitoAtual;
-                localStorage.removeItem(chaveLeito);
-                
-                console.log('localStorage limpo:', chaveEvolucao, chaveLeito);
-            } catch(e) {
-                console.error('Erro ao limpar localStorage:', e);
-            }
-            
             // Limpar formulário COMPLETAMENTE
             document.querySelectorAll("input, textarea, select").forEach(function(el) {
                 if (el.id === 'seletorCTI' || el.id === 'seletorLeito') return;
@@ -6476,7 +6469,7 @@ function executarAlta(nomePaciente) {
             atualizarSelectLeitos();
             atualizarSyncStatus('ok');
             
-            alert("✅ Alta registrada com sucesso!\n\nPaciente: " + nomePaciente + "\n\nEvoluções foram arquivadas.\n\n⚠️ ATENÇÃO: Se quiser usar este leito novamente, troque para outro leito e volte para garantir limpeza completa.");
+            alert("✅ Alta registrada com sucesso!\n\nPaciente: " + nomePaciente + "\n\nEvoluções foram arquivadas.");
         })
         .catch(function(error) {
             console.error('Erro ao dar alta:', error);

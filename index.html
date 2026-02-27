@@ -482,6 +482,7 @@ const db = firebase.firestore();
 // Variáveis globais de autenticação
 let currentUser = null;
 let isAdmin = false;
+let sistemaInicializado = false; // Impede salvar formulário vazio na inicialização
 </script>
 
 </head>
@@ -2482,11 +2483,6 @@ let isAdmin = false;
     conteudo._atualizadoPor = currentUser ? currentUser.email : 'desconhecido';
     conteudo._admissaoSalvaEm = new Date().toISOString();
     conteudo._admissaoSalvaPor = currentUser ? currentUser.email : 'desconhecido';
-    
-    // Salvar imediatamente no localStorage como backup
-    try {
-        localStorage.setItem('LEITO_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
-    } catch(e) {}
     
     atualizarSyncStatus('pending');
     
@@ -5283,11 +5279,6 @@ function salvarLeitoAtual() {
     conteudo._ultimaAtualizacao = new Date().toISOString();
     conteudo._atualizadoPor = currentUser ? currentUser.email : 'desconhecido';
     
-    // Salvar imediatamente no localStorage como backup
-    try {
-        localStorage.setItem('LEITO_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
-    } catch(e) {}
-    
     atualizarSyncStatus('pending');
     
     // Salvar no Firebase
@@ -5325,55 +5316,27 @@ function carregarLeito() {
     db.collection('leitos').doc(chave).get()
         .then(function(doc) {
             if (!doc.exists) {
-                // Verificar se há backup local antes de declarar leito vazio
-                var dadosLocal = localStorage.getItem('LEITO_' + ctiAtual + '_' + leitoAtual);
-                if (dadosLocal) {
-                    try {
-                        var conteudoLocal = JSON.parse(dadosLocal);
-                        // Só usa o backup se tiver nome de paciente (admissão real)
-                        if (conteudoLocal.nome && conteudoLocal.nome.trim()) {
-                            aplicarDadosFormulario(conteudoLocal);
-                            atualizarStatusLeito('Paciente: ' + conteudoLocal.nome + ' (backup local)');
-                            listarEvolucoes();
-                            atualizarDiasInternacao();
-                            // Tentar reenviar para o Firebase silenciosamente
-                            db.collection('leitos').doc(getChaveLeitoFirebase()).set(conteudoLocal)
-                                .then(function() { atualizarSyncStatus('ok'); })
-                                .catch(function() {});
-                            return;
-                        }
-                    } catch(e) {}
-                }
-                // Leito realmente vazio
+                // Leito vazio
                 preencherDataHoraAtual();
                 atualizarStatusLeito('Leito vazio');
                 listarEvolucoes();
+                sistemaInicializado = true;
                 return;
             }
             
             var conteudo = doc.data();
             aplicarDadosFormulario(conteudo);
             
-            // Atualizar backup local com dado mais recente do Firebase
-            try {
-                localStorage.setItem('LEITO_' + ctiAtual + '_' + leitoAtual, JSON.stringify(conteudo));
-            } catch(e) {}
-            
             var nomePaciente = conteudo.nome || 'Sem nome';
             atualizarStatusLeito('Paciente: ' + nomePaciente);
             listarEvolucoes();
             atualizarDiasInternacao();
+            sistemaInicializado = true;
         })
         .catch(function(error) {
             console.error('Erro ao carregar:', error);
             atualizarStatusLeito('Erro ao carregar');
-            // Tentar carregar do localStorage como fallback
-            var dadosLocal = localStorage.getItem('LEITO_' + ctiAtual + '_' + leitoAtual);
-            if (dadosLocal) {
-                try {
-                    aplicarDadosFormulario(JSON.parse(dadosLocal));
-                } catch(e) {}
-            }
+            sistemaInicializado = true;
         });
 }
 
@@ -5589,8 +5552,8 @@ function atualizarLeitos() {
     
     if (!selCTI || !selLeito) return;
     
-    // Salvar leito atual antes de trocar
-    if (currentUser) {
+    // Só salva se o sistema já foi inicializado (evita sobrescrever dados na primeira carga)
+    if (currentUser && sistemaInicializado) {
         salvarLeitoAtual();
     }
     
